@@ -4,14 +4,14 @@
     <span class="d-flex align-center">
       &copy;
       {{ new Date().getFullYear() }}
-      ASE Global Integrated Solutions Co., Ltd. 
+      ASE Global Integrated Solutions Co., Ltd.
       <VIcon
         icon="ri-heart-line"
         color="error"
         size="1.25rem"
         class="mx-1"
       />
-       | Powered by  <a
+      | Powered by  <a
         href="https://themeselection.com"
         target="_blank"
         rel="noopener noreferrer"
@@ -19,23 +19,25 @@
       >ThemeSelection</a>
     </span>
     <!-- 👉 Footer: right content -->
-    <!-- <span class="d-md-flex gap-x-4 text-primary d-none">
+    <!--
+      <span class="d-md-flex gap-x-4 text-primary d-none">
       <a
-        href="https://themeselection.com/license/"
-        target="noopener noreferrer"
+      href="https://themeselection.com/license/"
+      target="noopener noreferrer"
       >License</a>
       <a
-        href="https://themeselection.com/"
-        target="noopener noreferrer"
+      href="https://themeselection.com/"
+      target="noopener noreferrer"
       >More Themes</a>
       <a
-        href="https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/documentation/"
-        target="noopener noreferrer"
+      href="https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/documentation/"
+      target="noopener noreferrer"
       >Documentation</a>
       <a
-        href="https://themeselection.com/support/"
-        target="noopener noreferrer"
+      href="https://themeselection.com/support/"
+      target="noopener noreferrer"
       >Support</a>
-    </span> -->
+      </span>
+    -->
   </div>
 </template>

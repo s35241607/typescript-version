@@ -12,7 +12,7 @@ const loadingStore = useLoadingStore()
       absolute
       color="primary"
       height="3"
-      style="z-index: 9999"
+      style="z-index: 9999;"
     />
     <RouterView />
   </VApp>
