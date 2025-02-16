@@ -17,6 +17,10 @@ export const routes = [
         component: () => import('@/pages/typography.vue'),
       },
       {
+        path: 'eqp-option',
+        component: () => import('@/pages/eqp-option.vue'),
+      },
+      {
         path: 'icons',
         component: () => import('@/pages/icons.vue'),
       },

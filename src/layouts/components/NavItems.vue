@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
-import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
-import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
+import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue';
+import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue';
+import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
 </script>
 
 <template>
@@ -110,6 +110,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
       heading: 'Apps & Pages',
     }"
   />
+ 
   <VerticalNavLink
     :item="{
       title: 'Email',
@@ -120,6 +121,11 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
       badgeClass: 'bg-light-primary text-primary',
     }"
   />
+   <VerticalNavLink :item="{
+      title: 'Eqp Option',
+      icon: 'ri-settings-line',
+      to: '/eqp-option'
+    }"/>
   <VerticalNavLink
     :item="{
       title: 'Chat',
@@ -283,3 +289,4 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 </template>
+

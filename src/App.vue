@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import UpgradeToPro from '@/components/UpgradeToPro.vue'
+import { useLoadingStore } from '@/stores/loaingStore'
+
+const loadingStore = useLoadingStore()
 </script>
 
 <template>
-  <VApp>
-    <RouterView />
-    <UpgradeToPro />
-  </VApp>
+  <v-app>
+    <v-progress-linear
+      v-if="loadingStore.loading"
+      indeterminate
+      color="primary"
+      height="4"
+    ></v-progress-linear>
+    <router-view />
+  </v-app>
 </template>

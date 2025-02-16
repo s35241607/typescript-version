@@ -19,7 +19,7 @@ export default function (app: App) {
     defaults,
     icons,
     theme: {
-      defaultTheme: 'light',
+      defaultTheme: 'dark',
       themes,
     },
   })

@@ -4,14 +4,14 @@
     <span class="d-flex align-center">
       &copy;
       {{ new Date().getFullYear() }}
-      Made With
+      ASE Global Integrated Solutions Co., Ltd. 
       <VIcon
         icon="ri-heart-line"
         color="error"
         size="1.25rem"
         class="mx-1"
       />
-      By <a
+       | Powered by  <a
         href="https://themeselection.com"
         target="_blank"
         rel="noopener noreferrer"
@@ -19,7 +19,7 @@
       >ThemeSelection</a>
     </span>
     <!-- 👉 Footer: right content -->
-    <span class="d-md-flex gap-x-4 text-primary d-none">
+    <!-- <span class="d-md-flex gap-x-4 text-primary d-none">
       <a
         href="https://themeselection.com/license/"
         target="noopener noreferrer"
@@ -36,6 +36,6 @@
         href="https://themeselection.com/support/"
         target="noopener noreferrer"
       >Support</a>
-    </span>
+    </span> -->
   </div>
 </template>
