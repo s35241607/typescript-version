@@ -1,5 +1,18 @@
 <script setup lang="ts">
-import avatar1 from '@images/avatars/avatar-1.png'
+import { onBeforeMount, ref } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+
+const { user, fetchUser } = useUserStore()
+const avatar = ref<string>()
+
+onBeforeMount(async () => {
+  await fetchUser()
+  if (user?.id) {
+    // 將 Blob 物件轉換為 Object URL
+    avatar.value = `http://localhost:8080/api/v1/users/${user.id}/image/`
+  }
+  console.log('user', user)
+})
 </script>
 
 <template>
@@ -16,7 +29,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
       color="primary"
       variant="tonal"
     >
-      <VImg :src="avatar1" />
+      <VImg :src="avatar" />
 
       <!-- SECTION Menu -->
       <VMenu
@@ -41,14 +54,14 @@ import avatar1 from '@images/avatars/avatar-1.png'
                     color="primary"
                     variant="tonal"
                   >
-                    <VImg :src="avatar1" />
+                    <VImg :src="avatar" />
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{ user?.username }}
             </VListItemTitle>
             <VListItemSubtitle>Admin</VListItemSubtitle>
           </VListItem>

@@ -34,11 +34,10 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.fixAll.stylelint": "explicit",
-    "source.organizeImports": "explicit"
+    // "source.organizeImports": "explicit"
   },
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
-  "eslint.packageManager": "pnpm",
   // Extension: Stylelint
   "stylelint.packageManager": "pnpm",
   "stylelint.validate": [
@@ -105,5 +104,6 @@
         "borderStyle": "solid"
       }
     ]
-  }
+  },
+  "prettier.enable": false
 }
