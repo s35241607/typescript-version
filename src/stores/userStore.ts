@@ -6,9 +6,12 @@ export const useUserStore = defineStore('user', () => {
 
   async function fetchUser() {
     try {
-    } catch (error) {
+      console.log(123)
+    }
+    catch (error) {
       console.error('Failed to fetch user:', error)
     }
   }
+
   return { user }
 })

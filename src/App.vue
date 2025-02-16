@@ -5,13 +5,15 @@ const loadingStore = useLoadingStore()
 </script>
 
 <template>
-  <v-app>
-    <v-progress-linear
+  <VApp>
+    <VProgressLinear
       v-if="loadingStore.loading"
       indeterminate
+      absolute
       color="primary"
-      height="4"
-    ></v-progress-linear>
-    <router-view />
-  </v-app>
+      height="3"
+      style="z-index: 9999"
+    />
+    <RouterView />
+  </VApp>
 </template>
