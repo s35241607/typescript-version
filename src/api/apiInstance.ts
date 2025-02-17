@@ -31,8 +31,8 @@ apiInstance.interceptors.request.use(
       return config
     }
 
-    // const token = getCookie(authTokenCookieName)
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwibmFtZSI6IkxhbkpKX0xpbiIsImp0aSI6Ijk4YWU2NzQzLTA2OTUtNDgzOC05MjI2LTFkZjg1ZDQyY2QxNyIsImVtYWlsIjoiczM1MjQxNjA3c0BnbWFpbC5jb20iLCJuYmYiOjE3Mzk3MTUwNTgsImV4cCI6MTczOTcxNjg1OCwiaWF0IjoxNzM5NzE1MDU4LCJpc3MiOiJsYW4tc2lkZS1wcm9qZWN0In0.jKsCo4SVe89FZeIZKh49a775e5E_WrGxnOeOHaWx_8U'
+    const token = import.meta.env.MODE === 'development' ? import.meta.env.VITE_DEV_AUTH_TOKEN : getCookie(authTokenCookieName)
+
     if (token)
       config.headers.Authorization = `Bearer ${token}`
 
