@@ -2,16 +2,11 @@
 import { onBeforeMount, ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 
-const { user, fetchUser } = useUserStore()
-const avatar = ref<string>()
+const userStore = useUserStore()
+const avatar = ref<string>(`${import.meta.env.VITE_API_GATEWAY_URL}/api/v1/users/${userStore.user?.id}/image`)
 
 onBeforeMount(async () => {
-  await fetchUser()
-  if (user?.id) {
-    // 將 Blob 物件轉換為 Object URL
-    avatar.value = `http://localhost:8080/api/v1/users/${user.id}/image/`
-  }
-  console.log('user', user)
+  await userStore.fetchUser()
 })
 </script>
 
@@ -61,7 +56,7 @@ onBeforeMount(async () => {
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              {{ user?.username }}
+              {{ userStore.user?.username }}
             </VListItemTitle>
             <VListItemSubtitle>Admin</VListItemSubtitle>
           </VListItem>
