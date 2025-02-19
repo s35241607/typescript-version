@@ -1,40 +1,68 @@
 export const routes = [
-  { path: '/', redirect: '/dashboard' },
+  { path: '/', redirect: '/home' },
   {
     path: '/',
     component: () => import('@/layouts/default.vue'),
     children: [
       {
+        path: 'home',
+        name: 'Home',
+        component: () => import('@/pages/Home.vue'),
+        meta: { breadcrumb: 'Home' },
+      },
+      {
         path: 'dashboard',
+        name: 'Dashboard',
         component: () => import('@/pages/dashboard.vue'),
+        meta: { breadcrumb: 'Dashboard' },
       },
       {
         path: 'account-settings',
+        name: 'AccountSettings',
         component: () => import('@/pages/account-settings.vue'),
+        meta: { breadcrumb: 'Account Settings' },
       },
       {
         path: 'typography',
+        name: 'Typography',
         component: () => import('@/pages/typography.vue'),
+        meta: { breadcrumb: 'Typography' },
       },
       {
-        path: 'eqp-option',
-        component: () => import('@/pages/eqp-option.vue'),
+        path: 'users',
+        name: 'UserList',
+        component: () => import('@/pages/User/UserList.vue'),
+        meta: { breadcrumb: 'Users' },
+      },
+      {
+        path: 'users/:id',
+        name: 'UserDetail',
+        component: () => import('@/pages/User/UserDetail.vue'),
+        meta: { breadcrumb: ':id' },
       },
       {
         path: 'icons',
+        name: 'Icons',
         component: () => import('@/pages/icons.vue'),
+        meta: { breadcrumb: 'Icons' },
       },
       {
         path: 'cards',
+        name: 'Cards',
         component: () => import('@/pages/cards.vue'),
+        meta: { breadcrumb: 'Cards' },
       },
       {
         path: 'tables',
+        name: 'Tables',
         component: () => import('@/pages/tables.vue'),
+        meta: { breadcrumb: 'Tables' },
       },
       {
         path: 'form-layouts',
+        name: 'FormLayouts',
         component: () => import('@/pages/form-layouts.vue'),
+        meta: { breadcrumb: 'Form Layouts' },
       },
     ],
   },
@@ -44,15 +72,21 @@ export const routes = [
     children: [
       {
         path: 'login',
+        name: 'Login',
         component: () => import('@/pages/login.vue'),
+        meta: { breadcrumb: 'Login' },
       },
       {
         path: 'register',
+        name: 'Register',
         component: () => import('@/pages/register.vue'),
+        meta: { breadcrumb: 'Register' },
       },
       {
         path: '/:pathMatch(.*)*',
+        name: 'Error',
         component: () => import('@/pages/[...error].vue'),
+        meta: { breadcrumb: 'Error' },
       },
     ],
   },

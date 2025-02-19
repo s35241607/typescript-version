@@ -110,6 +110,13 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
       heading: 'Apps & Pages',
     }"
   />
+  <VerticalNavLink
+    :item="{
+      title: 'Users',
+      icon: 'ri-user-line',
+      to: '/users',
+    }"
+  />
 
   <VerticalNavLink
     :item="{
@@ -121,13 +128,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
       badgeClass: 'bg-light-primary text-primary',
     }"
   />
-  <VerticalNavLink
-    :item="{
-      title: 'Eqp Option',
-      icon: 'ri-settings-line',
-      to: '/eqp-option',
-    }"
-  />
+
   <VerticalNavLink
     :item="{
       title: 'Chat',

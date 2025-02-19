@@ -7,6 +7,7 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
+import Breadcrumbs from '@/layouts/components/Breadcrumbs.vue'
 </script>
 
 <template>
@@ -21,6 +22,9 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         >
           <VIcon icon="ri-menu-line" />
         </IconBtn>
+
+        <!-- 👉 Breadcrumbs -->
+        <Breadcrumbs />
 
         <VSpacer />
 

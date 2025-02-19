@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { router } from '@/plugins/router'
 
 const search = ref({
   machine: null,
@@ -25,7 +26,7 @@ const owners = ref([
   { title: 'Charlie', value: 'charlie' },
 ])
 
-const headers = ref([
+const headers = ref<any>([
   { title: 'ID', key: 'id', value: 'id', align: 'end' }, // 添加 value: 'id'
   { title: 'Name', key: 'name', value: 'name', align: 'start' }, // 添加 value: 'name'
   { title: 'Category', key: 'category', value: 'category', align: 'start' }, // 添加 value: 'category'
@@ -66,6 +67,14 @@ const filteredItems = computed(() => {
 
 const exportData = () => {
   console.log('Exporting:', filteredItems.value)
+}
+
+// Start of Selection
+const goToDetail = (event: any, row: any) => {
+  console.log(row.item)
+  nextTick(() => {
+    router.push({ name: 'UserDetail', params: { id: row.item.id } })
+  })
 }
 </script>
 
@@ -116,6 +125,7 @@ const exportData = () => {
           :headers="headers"
           :items="filteredItems"
           show-select
+          @click:row="goToDetail"
         >
           <template #item.price="{ item }">
             {{ new Intl.NumberFormat().format(item.price) }}
