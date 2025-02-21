@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/useUserStore'
 
 const userStore = useUserStore()
 const avatar = ref<string>(`${import.meta.env.VITE_API_GATEWAY_URL}/api/v1/users/${userStore.user?.id}/image`)

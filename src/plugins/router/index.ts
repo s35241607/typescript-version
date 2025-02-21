@@ -1,7 +1,7 @@
 import type { App } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from './routes'
-import { useLoadingStore } from '@/stores/loaingStore'
+import { useLoadingStore } from '@/stores/useLoadingStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

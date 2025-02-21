@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLoadingStore } from '@/stores/loaingStore'
+import { useLoadingStore } from '@/stores/useLoadingStore'
 
 const loadingStore = useLoadingStore()
 </script>
@@ -17,3 +17,4 @@ const loadingStore = useLoadingStore()
     <RouterView />
   </VApp>
 </template>
+@/stores/useLoadingStore

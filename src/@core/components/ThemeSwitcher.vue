@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from 'vuetify'
+import { watch } from 'vue'
 import type { ThemeSwitcherTheme } from '@layouts/types'
 
 const props = defineProps<{
@@ -7,10 +8,15 @@ const props = defineProps<{
 }>()
 
 const { name: themeName, global: globalTheme } = useTheme()
-const { state: currentThemeName, next: getNextThemeName, index: currentThemeIndex } = useCycleList(props.themes.map(t => t.name), { initialValue: themeName })
+const { state: currentThemeName, next: getNextThemeName, index: currentThemeIndex } = useCycleList(props.themes.map(t => t.name), { initialValue: localStorage.getItem('theme') ?? themeName })
 
 const changeTheme = () => {
-  globalTheme.name.value = getNextThemeName()
+  const nextTheme = getNextThemeName()
+
+  globalTheme.name.value = nextTheme
+
+  // 根據選擇的主題更新 localStorage
+  localStorage.setItem('theme', nextTheme)
 }
 
 // Update icon if theme is changed from other sources

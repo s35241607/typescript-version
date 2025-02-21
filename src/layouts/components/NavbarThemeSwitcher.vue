@@ -10,6 +10,18 @@ const themes: ThemeSwitcherTheme[] = [
     name: 'dark',
     icon: 'ri-moon-clear-line',
   },
+  {
+    name: 'black',
+    icon: 'ri-moon-clear-line',
+  },
+  {
+    name: 'black2',
+    icon: 'ri-moon-clear-line',
+  },
+  {
+    name: 'black3',
+    icon: 'ri-moon-clear-line',
+  },
 ]
 </script>
 
