@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import userService from '@/api/services/userService'
-import type { User } from '@/api/types/user'
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<User | null>(null)
+  const user = ref<UserResponse | null>(null)
+  const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
 
   async function fetchUser() {
@@ -18,5 +18,5 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { user, fetchUser, error }
+  return { user, loading, fetchUser, error }
 })

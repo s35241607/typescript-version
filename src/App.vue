@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useSnakeBarStore } from './stores/useSnakeBarStore'
 import { useLoadingStore } from '@/stores/useLoadingStore'
 
 const loadingStore = useLoadingStore()
+const snakeBarStore = useSnakeBarStore()
 </script>
 
 <template>
@@ -14,7 +16,13 @@ const loadingStore = useLoadingStore()
       height="3"
       style="z-index: 9999;"
     />
+    <VSnackbar
+      v-model="snakeBarStore.isVisible"
+      :color="snakeBarStore.snakeBarColor"
+      top
+    >
+      {{ snakeBarStore.message }}
+    </VSnackbar>
     <RouterView />
   </VApp>
 </template>
-@/stores/useLoadingStore

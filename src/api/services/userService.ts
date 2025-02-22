@@ -1,49 +1,38 @@
-// src/api/services/userService.ts
-import http from '../http'
-import type { User } from '../types/user'
+import http from '@/api/http'
 
 const userService = {
-  getUserList: async (params?: any): Promise<User[]> => {
-    return await http.get<User[]>('/users', { params })
-  },
-  getUser: async (userId: number): Promise<User> => {
-    return await http.get<User>(`/users/${userId}`)
-  },
+  // Auth
+  register: async (data: RegisterRequest) => await http.post<LoginResponse, RegisterRequest>('/api/v1/auth/register', data),
+  login: async (data: LoginRequest) => await http.post<LoginResponse, LoginRequest>('/api/v1/auth/login', data),
+  changePassword: async (data: ChangePasswordRequest) => await http.post<ApiResponse, ChangePasswordRequest>('/api/v1/auth/change-password', data),
+  forgotPassword: async (data: ForgotPasswordRequest) => await http.post<ApiResponse, ForgotPasswordRequest>('/api/v1/auth/forgot-password', data),
+  resetPassword: async (data: ResetPasswordRequest) => await http.post<ApiResponse, ResetPasswordRequest>('/api/v1/auth/reset-password', data),
+  googleAuth: async (returnUrl: string) => await http.get(`/api/v1/auth/google-auth?returnUrl=${returnUrl}`),
+  googleCallback: async (returnUrl?: string) => await http.get(`/api/v1/auth/google-callback${returnUrl ? `?returnUrl=${returnUrl}` : ''}`),
 
-  getUserImage: async (userId: number): Promise<Blob> => {
-    return await http.get<Blob>(`/users/${userId}/image`)
-  },
+  // Permission
+  getPermissions: async () => await http.get<PermissionResponse[]>('/api/v1/permissions'),
+  createPermission: async (data: CreatePermissionRequest) => await http.post<PermissionResponse, CreatePermissionRequest>('/api/v1/permissions', data),
+  getPermissionById: async (id: number) => await http.get<PermissionResponse>(`/api/v1/permissions/${id}`),
+  updatePermission: async (id: number, data: UpdatePermissionRequest) => await http.put<PermissionResponse, UpdatePermissionRequest>(`/api/v1/permissions/${id}`, data),
+  deletePermission: async (id: number) => await http.delete<ApiResponse>(`/api/v1/permissions/${id}`),
 
-  getCurrentUser: async (): Promise<User> => {
-    return await http.get<User>('/users/me')
-  },
-  createUser: async (userData: Omit<User, 'id'>): Promise<User> => {
-    return await http.post<User, Omit<User, 'id'>>('/users', userData)
-  },
-  updateUser: async (userId: number, userData: Omit<User, 'id'>): Promise<User> => {
-    return await http.put<User, Omit<User, 'id'>>(`/users/${userId}`, userData)
-  },
-  deleteUser: async (userId: number): Promise<User> => {
-    return await http.delete<User>(`/users/${userId}`)
-  },
+  // Role
+  getRoles: async () => await http.get<RoleResponse[]>('/api/v1/roles'),
+  createRole: async (data: CreateRoleRequest) => await http.post<RoleResponse, CreateRoleRequest>('/api/v1/roles', data),
+  getRoleById: async (id: number) => await http.get<RoleResponse>(`/api/v1/roles/${id}`),
+  updateRole: async (id: number, data: UpdateRoleRequest) => await http.put<RoleResponse, UpdateRoleRequest>(`/api/v1/roles/${id}`, data),
+  deleteRole: async (id: number) => await http.delete<ApiResponse>(`/api/v1/roles/${id}`),
 
-  // 檔案上傳範例
-  uploadUserAvatar: async (userId: number, avatarFile: File): Promise<any> => {
-    const formData = new FormData()
+  // User
+  getUsers: async () => await http.get<UserResponse[]>('/api/v1/users'),
+  getUserById: async (id: number) => await http.get<UserResponse>(`/api/v1/users/${id}`),
+  getUserByUsername: async (username: string) => await http.get<UserResponse>(`/username/${username}`),
+  getCurrentUser: async () => await http.get<UserResponse>('/api/v1/users/me'),
 
-    formData.append('avatar', avatarFile) // 'avatar' 是後端接收檔案的欄位名稱，請根據後端 API 調整
-
-    return await http.postForm(`/users/${userId}/avatar`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }, // 顯式設定 Content-Type，雖然 FormData 通常會自動設定
-    })
-  },
-
-  // 檔案下載範例
-  downloadUserReport: async (userId: number): Promise<Blob> => {
-    return await http.download(`/users/${userId}/report`)
-  },
-
-  // ... 其他用戶相關的 API 請求方法
+  // UserImage
+  getUserImage: async (id: number) => await http.download(`/api/v1/users/${id}/image`),
+  uploadUserImage: async (id: number, formData: FormData) => await http.postForm<ApiResponse, FormData>(`/api/v1/users/${id}/image`, formData),
 }
 
 export default userService

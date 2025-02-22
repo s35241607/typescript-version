@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
 import { useUserStore } from '@/stores/useUserStore'
+import avatar1 from '@images/avatars/avatar-1.png'
 
 const userStore = useUserStore()
-const avatar = ref<string>(`${import.meta.env.VITE_API_GATEWAY_URL}/api/v1/users/${userStore.user?.id}/image`)
+const avatar = ref<string>()
 
 onBeforeMount(async () => {
   await userStore.fetchUser()
+  avatar.value = `${import.meta.env.VITE_API_GATEWAY_URL}/api/v1/users/${userStore.user?.id}/image`
 })
 </script>
 
@@ -24,7 +26,11 @@ onBeforeMount(async () => {
       color="primary"
       variant="tonal"
     >
-      <VImg :src="avatar" />
+      <VImg
+        :src="avatar"
+        :loading="userStore.loading"
+        :error="avatar1"
+      />
 
       <!-- SECTION Menu -->
       <VMenu
@@ -49,7 +55,11 @@ onBeforeMount(async () => {
                     color="primary"
                     variant="tonal"
                   >
-                    <VImg :src="avatar" />
+                    <VImg
+                      :src="avatar"
+                      :loading="userStore.loading"
+                      :error="avatar1"
+                    />
                   </VAvatar>
                 </VBadge>
               </VListItemAction>

@@ -3,7 +3,7 @@ import axios from 'axios'
 // 環境變數
 const authTokenCookieName = import.meta.env.VITE_AUTH_COOKIE_NAME
 const ssoLoginUrl = import.meta.env.VITE_SSO_LOGIN_URL
-const apiGatewayUrl = `${import.meta.env.VITE_API_GATEWAY_URL}/api/v1`
+const apiGatewayUrl = `${import.meta.env.VITE_API_GATEWAY_URL}`
 
 // 解析 Cookie 的函式
 function getCookie(name: string): string | null {

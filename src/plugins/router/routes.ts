@@ -31,13 +31,13 @@ export const routes = [
       {
         path: 'users',
         name: 'UserList',
-        component: () => import('@/pages/User/UserList.vue'),
+        component: () => import('@/pages/User/UserListPage.vue'),
         meta: { breadcrumb: 'Users' },
       },
       {
         path: 'users/:id',
         name: 'UserDetail',
-        component: () => import('@/pages/User/UserDetail.vue'),
+        component: () => import('@/pages/User/UserDetailPage.vue'),
         meta: { breadcrumb: ':id' },
       },
       {
