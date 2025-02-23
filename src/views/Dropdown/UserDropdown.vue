@@ -10,6 +10,16 @@ const { data: users, loading: usersLoading, fetch: fetchUsers } = useApi<UserRes
 
 const apiGatewayUrl: string = import.meta.env.VITE_API_GATEWAY_URL
 
+const customSearch = (item: any, queryText: string, data: any) => {
+  if (!queryText)
+    return true
+
+  const searchText = queryText.toLowerCase()
+
+  return data.raw?.username?.toLowerCase().includes(searchText)
+      || data.raw?.email?.toLowerCase().includes(searchText)
+}
+
 onMounted(async () => {
   await fetchUsers(userService.getUsers())
 })
@@ -23,6 +33,7 @@ onMounted(async () => {
     item-value="id"
     item-title="username"
     label="Search"
+    :custom-filter="customSearch"
   >
     <template #item="{ props, item }">
       <VListItem
