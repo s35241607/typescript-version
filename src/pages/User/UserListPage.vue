@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import UserDataTable from '@/views/User/UserDataTable.vue'
 import UserDropdown from '@/views/Dropdown/UserDropdown.vue'
+import AddUser from '@/views/User/AddUser.vue'
 
 const search = ref()
 
@@ -35,7 +36,7 @@ const search = ref()
         <VCardText class="d-flex flex-wrap gap-4">
           <VSpacer />
           <VBtn>Search</VBtn>
-          <VBtn>Add</VBtn>
+          <AddUser />
         </VCardText>
         <UserDataTable />
       </VCard>

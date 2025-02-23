@@ -18,10 +18,18 @@ const snakeBarStore = useSnakeBarStore()
     />
     <VSnackbar
       v-model="snakeBarStore.isVisible"
-      :color="snakeBarStore.snakeBarColor"
-      top
+      :color="snakeBarStore.color"
+      location="bottom right"
+      variant="tonal"
     >
       {{ snakeBarStore.message }}
+      <template #actions>
+        <VBtn
+          color="white"
+          icon="ri-close-line"
+          @click="snakeBarStore.isVisible = false"
+        />
+      </template>
     </VSnackbar>
     <RouterView />
   </VApp>
