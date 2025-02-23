@@ -1,22 +1,28 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { useSnakeBarStore } from './useSnakeBarStore'
 import userService from '@/api/services/userService'
+import type { UserResponse } from '@/api/services/userType'
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<UserResponse | null>(null)
+  const users = ref<UserResponse[]>()
   const loading = ref<boolean>(false)
-  const error = ref<string | null>(null)
+  const message = ref<string | null>()
 
-  async function fetchUser() {
+  const snakeBarStore = useSnakeBarStore()
+
+  async function fetch() {
     try {
-      user.value = await userService.getCurrentUser()
-      error.value = null
+      loading.value = true
+      users.value = await userService.getUsers()
     }
-    catch (err) {
-      console.error('Failed to fetch user:', err)
-      error.value = 'Failed to fetch user data.'
+    catch (err: any) {
+      console.error(err)
+
+      snakeBarStore.show(err?.response?.data?.message || 'fetch user error.')
+    }
+    finally {
+      loading.value = false
     }
   }
 
-  return { user, loading, fetchUser, error }
+  return { users, loading, message, fetch }
 })

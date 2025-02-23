@@ -20,6 +20,12 @@ interface CreateRoleRequest {
   description?: string | null;
 }
 
+interface CreateUserRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
 interface ForgotPasswordRequest {
   email: string;
 }
@@ -68,8 +74,18 @@ interface UpdateRoleRequest {
   description?: string | null;
 }
 
-interface UserResponse {
+interface UpdateUserRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface UserResponse {
   id: number;
-  username?: string | null;
-  email?: string | null;
+  username: string;
+  email: string;
+  loginFailedAttempts: number;
+  loginLockoutEnd?: string | null;
+  lastLoginDate?: string | null;
+  roles: RoleResponse[];
 }

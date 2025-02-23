@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
-import { useUserStore } from '@/stores/useUserStore'
+import { useCurrentUserStore } from '@/stores/useCurrentUserStore'
 import avatar1 from '@images/avatars/avatar-1.png'
 
-const userStore = useUserStore()
+const currentUserStore = useCurrentUserStore()
 const avatar = ref<string>()
 
 onBeforeMount(async () => {
-  await userStore.fetchUser()
-  avatar.value = `${import.meta.env.VITE_API_GATEWAY_URL}/api/v1/users/${userStore.user?.id}/image`
+  await currentUserStore.fetch()
+  avatar.value = `${import.meta.env.VITE_API_GATEWAY_URL}/api/v1/users/${currentUserStore.user?.id}/image`
 })
 </script>
 
@@ -28,7 +28,7 @@ onBeforeMount(async () => {
     >
       <VImg
         :src="avatar"
-        :loading="userStore.loading"
+        :loading="currentUserStore.loading"
         :error="avatar1"
       />
 
@@ -57,7 +57,7 @@ onBeforeMount(async () => {
                   >
                     <VImg
                       :src="avatar"
-                      :loading="userStore.loading"
+                      :loading="currentUserStore.loading"
                       :error="avatar1"
                     />
                   </VAvatar>
@@ -66,7 +66,7 @@ onBeforeMount(async () => {
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              {{ userStore.user?.username }}
+              {{ currentUserStore.user?.username }}
             </VListItemTitle>
             <VListItemSubtitle>Admin</VListItemSubtitle>
           </VListItem>
@@ -145,3 +145,4 @@ onBeforeMount(async () => {
     </VAvatar>
   </VBadge>
 </template>
+@/stores/useCurrentUserStore

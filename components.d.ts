@@ -16,6 +16,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
     UpgradeToPro: typeof import('./src/components/UpgradeToPro.vue')['default']
+    UserDataTable: typeof import('./src/views/User/UserDataTable.vue')['default']
     VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

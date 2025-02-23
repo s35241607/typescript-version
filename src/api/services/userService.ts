@@ -1,3 +1,4 @@
+import type { ApiResponse, ChangePasswordRequest, CreatePermissionRequest, CreateRoleRequest, CreateUserRequest, ForgotPasswordRequest, LoginRequest, LoginResponse, PermissionResponse, RegisterRequest, ResetPasswordRequest, RoleResponse, UpdatePermissionRequest, UpdateRoleRequest, UpdateUserRequest, UserResponse } from './userType'
 import http from '@/api/http'
 
 const userService = {
@@ -29,6 +30,8 @@ const userService = {
   getUserById: async (id: number) => await http.get<UserResponse>(`/api/v1/users/${id}`),
   getUserByUsername: async (username: string) => await http.get<UserResponse>(`/username/${username}`),
   getCurrentUser: async () => await http.get<UserResponse>('/api/v1/users/me'),
+  createUser: async (data: CreateUserRequest) => await http.post<UserResponse, CreateUserRequest>('/api/v1/users', data),
+  updateUser: async (id: number, data: UpdateUserRequest) => await http.put<UserResponse, UpdateUserRequest>(`/api/v1/users/${id}`, data),
 
   // UserImage
   getUserImage: async (id: number) => await http.download(`/api/v1/users/${id}/image`),
