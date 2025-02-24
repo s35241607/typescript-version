@@ -24,5 +24,17 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { users, loading, message, fetch }
+  // 轉換成 Map 以加速查找
+  const usersMap = computed<Record<number, UserResponse>>(() => {
+    if (!users.value)
+      return {}
+
+    return users.value.reduce((map, user) => {
+      map[user.id] = user
+
+      return map
+    }, {} as Record<number, UserResponse>)
+  })
+
+  return { users, loading, message, fetch, usersMap }
 })
