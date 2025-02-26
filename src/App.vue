@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useSnakeBarStore } from './stores/useSnakeBarStore'
+import { useToastStore } from './stores/useToastStore'
 import { useLoadingStore } from '@/stores/useLoadingStore'
 
 const loadingStore = useLoadingStore()
 const snakeBarStore = useSnakeBarStore()
+const { queue } = useToastStore()
 </script>
 
 <template>
@@ -16,6 +18,7 @@ const snakeBarStore = useSnakeBarStore()
       height="3"
       style="z-index: 9999;"
     />
+
     <VSnackbar
       v-model="snakeBarStore.isVisible"
       :color="snakeBarStore.color"
@@ -31,6 +34,35 @@ const snakeBarStore = useSnakeBarStore()
         />
       </template>
     </VSnackbar>
+
+    <!-- Toast 訊息區 -->
+    <div class="toast-container">
+      <VAlert
+        v-for="item in queue"
+        :key="item.id"
+        :type="item.color"
+        class="toast"
+      >
+        {{ item.message }}
+      </VAlert>
+    </div>
     <RouterView />
   </VApp>
 </template>
+
+<style scoped>
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.toast {
+  margin-bottom: 10px;
+  width: 300px;
+}
+</style>
+./stores/useToastStore

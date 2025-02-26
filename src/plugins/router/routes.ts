@@ -35,10 +35,10 @@ export const routes = [
         meta: { breadcrumb: 'Users' },
       },
       {
-        path: 'users/:id',
+        path: 'users/:username',
         name: 'UserDetail',
         component: () => import('@/pages/User/UserDetailPage.vue'),
-        meta: { breadcrumb: ':id' },
+        meta: { breadcrumb: ':username' },
       },
       {
         path: 'icons',

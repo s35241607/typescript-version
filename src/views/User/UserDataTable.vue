@@ -31,7 +31,7 @@ onMounted(async () => {
   >
     <template #item.id="{ item }">
       <RouterLink
-        :to="`/users/${item.id}`"
+        :to="`/users/${item.username}`"
         class="text-blue text-decoration-none"
       >
         #{{ item.id }}
@@ -54,7 +54,7 @@ onMounted(async () => {
         <!-- 使用者資訊 -->
         <div class="d-flex flex-column">
           <RouterLink
-            :to="`/users/${item.id}`"
+            :to="`/users/${item.username}`"
             class="text-h6 font-weight-medium user-list-name"
           >
             {{ item.username }}
