@@ -120,6 +120,14 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 
   <VerticalNavLink
     :item="{
+      title: 'Test',
+      icon: 'ri-test-tube-line',
+      to: '/test',
+    }"
+  />
+
+  <VerticalNavLink
+    :item="{
       title: 'Email',
       icon: 'ri-mail-line',
       href: 'https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/email',

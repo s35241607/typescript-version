@@ -3,15 +3,7 @@ import UserDataTable from '@/views/User/UserDataTable.vue'
 import UserDropdown from '@/views/Dropdown/UserDropdown.vue'
 import AddUser from '@/views/User/AddUser.vue'
 
-import { useToastStore } from '@/stores/useToastStore'
-
-const toast = useToastStore()
-
 const search = ref()
-
-const onClick = (msg: string, type: string) => {
-  toast.show(msg, type)
-}
 
 // const filteredItems = computed(() => {
 //   return tableItems.value.filter(item => {
@@ -39,12 +31,6 @@ const onClick = (msg: string, type: string) => {
           </vrow>
         </VCardText>
 
-        <VBtn @click="onClick('success', 'success')">
-          success
-        </VBtn>
-        <VBtn @click="onClick('error', 'error')">
-          error
-        </VBtn>
         <VDivider />
 
         <VCardText class="d-flex flex-wrap gap-4">
@@ -57,4 +43,3 @@ const onClick = (msg: string, type: string) => {
     </VCol>
   </VRow>
 </template>
-@/stores/useToastStore

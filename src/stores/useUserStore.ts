@@ -1,4 +1,4 @@
-import { useSnakeBarStore } from './useSnakeBarStore'
+import { useSnackbarStore } from './useSnackbarStore'
 import userService from '@/api/services/userService'
 import type { UserResponse } from '@/api/services/userType'
 
@@ -7,7 +7,7 @@ export const useUserStore = defineStore('user', () => {
   const loading = ref<boolean>(false)
   const message = ref<string | null>()
 
-  const snakeBarStore = useSnakeBarStore()
+  const snackbarStore = useSnackbarStore()
 
   async function fetch() {
     try {
@@ -17,7 +17,7 @@ export const useUserStore = defineStore('user', () => {
     catch (err: any) {
       console.error(err)
 
-      snakeBarStore.show(err?.response?.data?.message || 'fetch user error.')
+      snackbarStore.show(err?.response?.data?.message || 'fetch user error.')
     }
     finally {
       loading.value = false

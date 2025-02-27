@@ -1,3 +1,5 @@
+import BreadcrumbsVue from '@/layouts/components/Breadcrumbs.vue'
+
 export const routes = [
   { path: '/', redirect: '/home' },
   {
@@ -39,6 +41,12 @@ export const routes = [
         name: 'UserDetail',
         component: () => import('@/pages/User/UserDetailPage.vue'),
         meta: { breadcrumb: ':username' },
+      },
+      {
+        path: 'test',
+        name: 'Test',
+        component: () => import('@/pages/Test/TestPage.vue'),
+        meta: { breadcrumb: 'Test' },
       },
       {
         path: 'icons',

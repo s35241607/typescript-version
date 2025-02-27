@@ -1,11 +1,11 @@
 import { ref } from 'vue'
-import { useSnakeBarStore } from '@/stores/useSnakeBarStore'
+import { useSnackbarStore } from '@/stores/useSnackbarStore'
 
 export function useApi<T>() {
   const data = ref<T[]>()
   const loading = ref<boolean>(false)
 
-  const snakeBarStore = useSnakeBarStore()
+  const snackbarStore = useSnackbarStore()
 
   async function fetch(api: Promise<T[]>, transform: any = null) {
     try {
@@ -18,7 +18,7 @@ export function useApi<T>() {
     }
     catch (err: any) {
       console.error(err)
-      snakeBarStore.show(err?.response?.data?.message || err?.message)
+      snackbarStore.show(err?.response?.data?.message || err?.message)
     }
     finally {
       loading.value = false

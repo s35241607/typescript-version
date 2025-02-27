@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import userService from '@/api/services/userService'
 import type { CreateUserRequest } from '@/api/services/userType'
-import { useSnakeBarStore } from '@/stores/useSnakeBarStore'
+import { useSnackbarStore } from '@/stores/useSnackbarStore'
 import { useUserStore } from '@/stores/useUserStore'
 
 const dialog = ref(false)
 const loading = ref<boolean>(false)
-const snakeBarStore = useSnakeBarStore()
+const snackbarStore = useSnackbarStore()
 const userStore = useUserStore()
 
 const form = ref<CreateUserRequest>({
@@ -19,13 +19,13 @@ const createUser = async () => {
   try {
     loading.value = true
     await userService.createUser(form.value)
-    snakeBarStore.show('User created successfully!', 'success')
+    snackbarStore.show('User created successfully!', 'success')
     await userStore.fetch()
     dialog.value = false
   }
   catch (err: any) {
     console.error(err)
-    snakeBarStore.show(err?.response?.data?.message || err.message)
+    snackbarStore.show(err?.response?.data?.message || err.message)
   }
   finally {
     loading.value = false

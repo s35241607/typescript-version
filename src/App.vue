@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useSnakeBarStore } from './stores/useSnakeBarStore'
+import { useSnackbarStore } from './stores/useSnackbarStore'
 import { useToastStore } from './stores/useToastStore'
 import { useLoadingStore } from '@/stores/useLoadingStore'
 
 const loadingStore = useLoadingStore()
-const snakeBarStore = useSnakeBarStore()
+const snackbarStore = useSnackbarStore()
 const { queue } = useToastStore()
 </script>
 
@@ -20,17 +20,17 @@ const { queue } = useToastStore()
     />
 
     <VSnackbar
-      v-model="snakeBarStore.isVisible"
-      :color="snakeBarStore.color"
+      v-model="snackbarStore.isVisible"
+      :color="snackbarStore.color"
       location="bottom right"
       variant="tonal"
     >
-      {{ snakeBarStore.message }}
+      {{ snackbarStore.message }}
       <template #actions>
         <VBtn
           color="white"
           icon="ri-close-line"
-          @click="snakeBarStore.isVisible = false"
+          @click="snackbarStore.isVisible = false"
         />
       </template>
     </VSnackbar>
@@ -42,6 +42,8 @@ const { queue } = useToastStore()
         :key="item.id"
         :type="item.color"
         class="toast"
+        variant="tonal"
+        closable
       >
         {{ item.message }}
       </VAlert>
@@ -53,16 +55,16 @@ const { queue } = useToastStore()
 <style scoped>
 .toast-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
+  inset-block-start: 20px;
+  inset-inline-end: 20px;
 }
 
 .toast {
-  margin-bottom: 10px;
-  width: 300px;
+  inline-size: 300px;
+  margin-block-end: 10px;
 }
 </style>
-./stores/useToastStore
+./stores/useSnackbarStore

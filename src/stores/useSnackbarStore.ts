@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-export const useSnakeBarStore = defineStore('snakeBar', () => {
+export const useSnackbarStore = defineStore('snackbar', () => {
   const message = ref<string | null>(null)
   const color = ref<string | undefined>()
   const isVisible = ref<boolean>(false)
