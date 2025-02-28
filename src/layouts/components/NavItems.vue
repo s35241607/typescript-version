@@ -118,13 +118,27 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 
-  <VerticalNavLink
+  <VerticalNavGroup
     :item="{
-      title: 'Test',
+      title: 'Test Pages',
       icon: 'ri-test-tube-line',
-      to: '/test',
+      badgeContent: 'Test',
+      badgeClass: 'bg-light-primary text-success',
     }"
-  />
+  >
+    <VerticalNavLink
+      :item="{
+        title: 'Toast',
+        to: '/test/toast',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
+        title: 'PriceTable',
+        to: '/test/price-table',
+      }"
+    />
+  </VerticalNavGroup>
 
   <VerticalNavLink
     :item="{

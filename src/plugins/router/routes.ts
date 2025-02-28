@@ -1,5 +1,3 @@
-import BreadcrumbsVue from '@/layouts/components/Breadcrumbs.vue'
-
 export const routes = [
   { path: '/', redirect: '/home' },
   {
@@ -43,10 +41,22 @@ export const routes = [
         meta: { breadcrumb: ':username' },
       },
       {
-        path: 'test',
-        name: 'Test',
-        component: () => import('@/pages/Test/TestPage.vue'),
-        meta: { breadcrumb: 'Test' },
+        path: 'test/toast',
+        name: 'TestToast',
+        component: () => import('@/pages/Test/TestToastPage.vue'),
+        meta: { breadcrumb: 'TestToast' },
+      },
+      {
+        path: 'test/price-table',
+        name: 'TestPriceTable',
+        component: () => import('@/pages/Test/TestPriceTablePage.vue'),
+        meta: { breadcrumb: 'TestPriceTable' },
+      },
+      {
+        path: 'test/price-table/:id',
+        name: 'TestPriceTableDetail',
+        component: () => import('@/pages/Test/TestPriceTableDetailPage.vue'),
+        meta: { breadcrumb: 'Detail' },
       },
       {
         path: 'icons',
