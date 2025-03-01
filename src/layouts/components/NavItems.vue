@@ -128,8 +128,8 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
   >
     <VerticalNavLink
       :item="{
-        title: 'Toast',
-        to: '/test/toast',
+        title: 'Test',
+        to: '/test',
       }"
     />
     <VerticalNavLink

@@ -41,10 +41,10 @@ export const routes = [
         meta: { breadcrumb: ':username' },
       },
       {
-        path: 'test/toast',
-        name: 'TestToast',
-        component: () => import('@/pages/Test/TestToastPage.vue'),
-        meta: { breadcrumb: 'TestToast' },
+        path: 'test',
+        name: 'Test',
+        component: () => import('@/pages/Test/TestPage.vue'),
+        meta: { breadcrumb: 'Test' },
       },
       {
         path: 'test/price-table',
