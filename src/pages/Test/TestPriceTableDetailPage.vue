@@ -23,8 +23,9 @@ const dateRules = [
 ]
 
 const priceTableItemHeaders = ref([
+  // { title: '', key: 'actions' },
   { title: '', key: 'data-table-group' }, // 加上這個 key 來啟用展開功能
-  { title: '', key: 'data-table-expand' }, // 加上這個 key 來啟用展開功能
+  // { title: '', key: 'data-table-expand' }, // 加上這個 key 來啟用展開功能
   { title: 'Type', key: 'type' },
 
   // { title: 'Category', key: 'eqpOption.category' },
@@ -37,6 +38,19 @@ const priceTableItemHeaders = ref([
   { title: 'List Price', key: 'listPrice' },
   { title: 'Reference Price', key: 'referencePrice' },
 ])
+
+const expanded = ref<any>([]) // 存放已展開的 rows
+
+// 點擊 row 時展開/收起
+const expandRow = (event: any, { item }: any) => {
+  if (!item)
+    return
+  const index = expanded.value.findIndex((i: any) => i === item)
+  if (index === -1)
+    expanded.value.push(item) // 加入展開
+  else
+    expanded.value.splice(index, 1) // 已展開則收起
+}
 
 const computedPriceTableItems = computed(() => {
   // 確保 priceTable.value?.items 存在，否則回傳空陣列
@@ -361,12 +375,29 @@ onBeforeMount(async () => {
     </VCardItem>
     <VCardText>
       <VDataTable
+        v-model:expanded="expanded"
         :headers="priceTableItemHeaders"
         :items="computedPriceTableItems"
         show-expand
         :group-by="[{ key: 'eqpOption.category', order: 'asc' }]"
         item-grouping
+        @click:row="expandRow"
       >
+        <!-- 編輯按鈕 -->
+        <template #item.data-table-group="{ item }">
+          <VBtn
+            color="primary"
+            @click="console.log(item)"
+          >
+            Edit
+          </VBtn>
+          <VBtn
+            color="red"
+            @click="console.log(item)"
+          >
+            Delete
+          </VBtn>
+        </template>
         <template #item.eqpOption.description="{ item }">
           {{ item.eqpOption.description }}
         </template>
