@@ -1,9 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 
+const emit = defineEmits(['confirmDelete'])
+
 const confirmDelete = ref(false)
 
 const deleteItem = () => {
+  emit('confirmDelete')
   console.log('Deleted Succeefully') // 這裡可以呼叫 API 來刪除
   confirmDelete.value = false
 }

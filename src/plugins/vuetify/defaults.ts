@@ -107,6 +107,14 @@ export default {
     color: 'primary',
     hideDetails: 'auto',
   },
+  VDateInput: {
+    variant: 'outlined',
+    density: 'comfortable',
+    color: 'primary',
+    hideDetails: 'auto',
+    prependIcon: '',
+    prependInnerIcon: '$calendar',
+  },
   VAutocomplete: {
     variant: 'outlined',
     color: 'primary',
@@ -139,5 +147,8 @@ export default {
   },
   VNavigationDrawer: {
     touchless: true,
+  },
+  VDataTable: {
+    density: 'comfortable',
   },
 }

@@ -35,7 +35,25 @@ export interface PriceTableResponse {
   currency: string
   contractStartDate: Date
   contractEndDate: Date
-  orderNumber: string // 新增欄位
+  orderNumber: string
+  createdAt: Date
+  createdBy: string
+  updatedAt: Date
+  updatedBy: string
+  ownerId: number
+  remark: string
+  status: string // 新增 status 欄位
+  items: PriceTableItemResponse[] // 新增
+}
+
+export interface PriceTableItemResponse {
+  id: number
+  priceTableId: number
+  type: string
+  eqpOptionId: number
+  savingBase: number
+  listPrice: number
+  referencePrice: number
 }
 
 // 產生假資料
@@ -72,15 +90,42 @@ const generateMockEqpOptions = (count: number, machineCount: number): EqpOptionR
   }))
 }
 
-const generateMockPriceTables = (machineCount: number): PriceTableResponse[] => {
-  return Array.from({ length: machineCount }, (_, i) => ({
+const generateMockPriceTableItems = (priceTableId: number, count: number): PriceTableItemResponse[] => {
+  return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
-    machineId: i + 1,
-    currency: 'USD',
-    contractStartDate: faker.date.past(),
-    contractEndDate: faker.date.future(),
-    orderNumber: `ORD-${faker.string.alphanumeric(6).toUpperCase()}`, // 新增 orderNumber
+    priceTableId,
+    type: faker.helpers.arrayElement(['Standard', 'Discounted', 'Special Offer']),
+    eqpOptionId: faker.number.int({ min: 1, max: 1500 }), // 隨機對應 EqOption
+    savingBase: faker.number.float({ min: 100, max: 10000 }),
+    listPrice: faker.number.float({ min: 100, max: 20000 }),
+    referencePrice: faker.number.float({ min: 100, max: 18000 }),
   }))
+}
+
+const generateMockPriceTables = (machineCount: number): PriceTableResponse[] => {
+  const currencies = ['USD', 'EUR', 'JPY', 'TWD', 'CNY', 'GBP']
+
+  return Array.from({ length: machineCount }, (_, i) => {
+    const createdAt = faker.date.past()
+    const updatedAt = faker.date.recent()
+
+    return {
+      id: i + 1,
+      machineId: i + 1,
+      currency: faker.helpers.arrayElement(currencies),
+      contractStartDate: faker.date.past(),
+      contractEndDate: faker.date.future(),
+      orderNumber: `PT-${faker.string.alphanumeric(6).toUpperCase()}`,
+      createdAt,
+      createdBy: faker.person.fullName(),
+      updatedAt,
+      updatedBy: faker.person.fullName(),
+      ownerId: faker.number.int({ min: 1, max: 100 }),
+      remark: faker.lorem.sentence(),
+      status: faker.helpers.arrayElement(['Draft', 'Pending', 'Approved', 'Rejected']),
+      items: generateMockPriceTableItems(i + 1, faker.number.int({ min: 20, max: 100 })), // 每張價格表 1~5 筆 items
+    }
+  })
 }
 
 const mockMachines = generateMockMachines(1000)

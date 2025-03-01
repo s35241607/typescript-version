@@ -13,7 +13,7 @@ import TestDeleteConfirm from '@/views/Test/TestDeleteConfirm.vue'
       </VCardTitle>
     </VCardItem>
     <VCardText>
-      <TestDeleteConfirm />
+      <TestDeleteConfirm @confirm-delete="() => console.log('123')" />
     </VCardText>
   </VCard>
 </template>
