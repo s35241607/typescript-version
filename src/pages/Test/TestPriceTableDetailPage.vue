@@ -33,7 +33,7 @@ onBeforeMount(async () => {
   2. Price Table 可修改資訊 (幣別、Owner、Contract Start Date、Contract End Date、Remark)
   3. Price Table 附件上傳、下載 RFQ Template
   4. Machine 資訊 (Maker、Model Name、Process、Supplier、Country)
-  5. Price Table Items (會是一個表格，含有以下資訊：Type, Category, PartNumber, Supplier PartNumber, SavingBase, List Price)，並且可以新增，或是使用一個選單從料號清單裡面帶出
+  5. Price Table Items (會是一個表格，含有以下資訊：Type, Category, PartNumber, Supplier PartNumber, Description, Supplement, SavingBase, List Price)，並且可以新增，或是使用一個選單從料號清單裡面帶出
   6. 單據操作功能：Save、Delete、Submit、Approve、Reject、Close
   7. 單據的歷史修改紀錄查看
   8. 簽核流程跟簽核歷程
