@@ -38,12 +38,14 @@ const deleteItem = () => {
           type="warning"
           variant="tonal"
         >
-          Are you sure you want to delete this item? This action cannot be undone.
+          Are you sure you want to delete this item? <br>
+          This action cannot be undone.
         </VAlert>
       </VCardText>
       <VCardActions class="justify-end">
         <VBtn
-          variant="tonal"
+          color="secondary"
+          variant="outlined"
           @click="confirmDelete = false"
         >
           Cancel
