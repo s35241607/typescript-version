@@ -7,10 +7,12 @@ import type { EqpOptionResponse, MachineResponse, PriceTableResponse } from '@/a
 import { eqpOptionService, machineService, priceTableService } from '@/api/services/mockService'
 
 // 初始化 priceTable 時確保是空對象
-const priceTable = ref<PriceTableResponse | undefined>({} as PriceTableResponse)
+const priceTable = ref<PriceTableResponse>({} as PriceTableResponse)
 const machine = ref<MachineResponse | undefined>({} as MachineResponse)
 const eqpOptions = ref<EqpOptionResponse[]>()
 const eqpOptionMap: any = ref()
+
+const editMode = ref<boolean>(false)
 
 const dateRules = [
   // 檢查是否是有效的日期格式
@@ -25,6 +27,8 @@ const dateRules = [
 const priceTableItemHeaders = ref([
   // { title: '', key: 'actions' },
   { title: '', key: 'data-table-group' }, // 加上這個 key 來啟用展開功能
+  { title: '#', key: 'sequence' },
+
   // { title: '', key: 'data-table-expand' }, // 加上這個 key 來啟用展開功能
   { title: 'Type', key: 'type' },
 
@@ -39,23 +43,30 @@ const priceTableItemHeaders = ref([
   { title: 'Reference Price', key: 'referencePrice' },
 ])
 
+const groupHeaders = ref<any>([])
+
 const expanded = ref<any>([]) // 存放已展開的 rows
 
 // 點擊 row 時展開/收起
-const expandRow = (event: any, { item }: any) => {
-  if (!item)
-    return
-  const index = expanded.value.findIndex((i: any) => i === item)
+const expandRow = (event: any, item: any) => {
+  const index = expanded.value.indexOf(item.item.id)
+
+  console.log('expand', index)
   if (index === -1)
-    expanded.value.push(item) // 加入展開
+    expanded.value.push(item.item.id)
   else
-    expanded.value.splice(index, 1) // 已展開則收起
+    expanded.value.splice(index, 1)
+}
+
+const deleteRow = (item: any) => {
+  priceTable.value.items = priceTable.value.items.filter(i => i.id !== item.id)
 }
 
 const computedPriceTableItems = computed(() => {
   // 確保 priceTable.value?.items 存在，否則回傳空陣列
   return (priceTable.value?.items || []).map(item => {
-    const eqpOption = eqpOptionMap.value[item.eqpOptionId] || {}
+    // 確保 eqpOptionMap.value 存在，避免讀取 undefined 屬性
+    const eqpOption = item.eqpOptionId ? eqpOptionMap.value?.[item.eqpOptionId] ?? {} : {}
 
     return {
       ...item, // 保留原始 `priceTableItems` 的結構
@@ -67,8 +78,10 @@ const computedPriceTableItems = computed(() => {
 onBeforeMount(async () => {
   const route = useRoute()
   const id = route.params.id
+  const response = await priceTableService.getPriceTableById(Number(id))
+  if (response)
+    priceTable.value = response
 
-  priceTable.value = await priceTableService.getPriceTableById(Number(id))
   console.log(priceTable.value)
 
   machine.value = await machineService.getMachineById(Number(priceTable.value?.machineId))
@@ -82,6 +95,12 @@ onBeforeMount(async () => {
 
     return map
   }, {})
+})
+
+onMounted(() => {
+  Object.values(groupHeaders.value).forEach((header: any) => {
+    header.toggleGroup(header.item)
+  })
 })
 </script>
 
@@ -321,7 +340,7 @@ onBeforeMount(async () => {
           sm="6"
         >
           <VTextField
-            v-model="priceTable.ownerId"
+            v-model="priceTable.ownerId as number"
             label="Owner"
           />
         </VCol>
@@ -333,7 +352,7 @@ onBeforeMount(async () => {
           sm="6"
         >
           <VDateInput
-            v-model="priceTable.contractStartDate"
+            v-model="priceTable.contractStartDate as Date"
             label="Contract Start Date"
             :rules="dateRules"
           />
@@ -346,7 +365,7 @@ onBeforeMount(async () => {
           sm="6"
         >
           <VDateInput
-            v-model="priceTable.contractEndDate"
+            v-model="priceTable.contractEndDate as Date"
             label="Contract End Date"
             :rules="dateRules"
           />
@@ -373,30 +392,37 @@ onBeforeMount(async () => {
     <VCardItem>
       <VCardTitle>Price Table Items</VCardTitle>
     </VCardItem>
+    <VCardText class="d-flex gap-2">
+      <VBtn>Choose P/N</VBtn>
+      <VBtn @click="editMode = !editMode">
+        Edit
+      </VBtn>
+    </VCardText>
     <VCardText>
-      <VDataTable
+      <VDataTableVirtual
         v-model:expanded="expanded"
         :headers="priceTableItemHeaders"
         :items="computedPriceTableItems"
         show-expand
         :group-by="[{ key: 'eqpOption.category', order: 'asc' }]"
         item-grouping
-        @click:row="expandRow"
+        height="60vh"
+        fixed-header
+        @click:row.stop="expandRow"
       >
         <!-- 編輯按鈕 -->
+
         <template #item.data-table-group="{ item }">
           <VBtn
-            color="primary"
-            @click="console.log(item)"
-          >
-            Edit
-          </VBtn>
-          <VBtn
-            color="red"
-            @click="console.log(item)"
-          >
-            Delete
-          </VBtn>
+            size="small"
+            variant="text"
+            color="error"
+            icon="ri-delete-bin-line"
+            @click="deleteRow(item)"
+          />
+        </template>
+        <template #item.sequence=" item ">
+          {{ item.index }}
         </template>
         <template #item.eqpOption.description="{ item }">
           {{ item.eqpOption.description }}
@@ -422,7 +448,43 @@ onBeforeMount(async () => {
             </td>
           </tr>
         </template>
-      </VDataTable>
+        <template #item.savingBase="{ item }">
+          <template v-if="editMode">
+            <input
+              v-model="item.savingBase"
+              type="text"
+              class="editable-input"
+              placeholder="請輸入保存基準"
+              style=" padding: 5px;border: 1px solid #007bff; border-radius: 4px; inline-size: 100%; text-align: end;"
+            >
+          </template>
+          <template v-else>
+            {{ item.savingBase }}
+          </template>
+        </template>
+        <template #item.listPrice="{ item }">
+          <template v-if="editMode">
+            <input
+              v-model="item.listPrice"
+              type="text"
+            >
+          </template>
+          <template v-else>
+            {{ item.listPrice }}
+          </template>
+        </template>
+        <template #item.referencePrice="{ item }">
+          <template v-if="editMode">
+            <input
+              v-model="item.referencePrice"
+              type="text"
+            >
+          </template>
+          <template v-else>
+            {{ item.referencePrice }}
+          </template>
+        </template>
+      </VDataTableVirtual>
     </VCardText>
   </VCard>
 </template>
@@ -437,7 +499,7 @@ onBeforeMount(async () => {
   white-space: nowrap;
 }
 
-.v-table{
+.v-table {
   white-space: nowrap;
 }
 </style>

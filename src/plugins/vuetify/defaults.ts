@@ -151,4 +151,7 @@ export default {
   VDataTable: {
     density: 'comfortable',
   },
+  VDataTableVirtual: {
+    density: 'comfortable',
+  },
 }
