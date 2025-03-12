@@ -4,14 +4,13 @@
     <span class="d-flex align-center">
       &copy;
       {{ new Date().getFullYear() }}
-      ASE Global Integrated Solutions Co., Ltd.
+      Lan Side Project
       <VIcon
         icon="ri-heart-line"
         color="error"
         size="1.25rem"
         class="mx-1"
-      />
-      | Powered by  <a
+      /> | Powered by  <a
         href="https://themeselection.com"
         target="_blank"
         rel="noopener noreferrer"

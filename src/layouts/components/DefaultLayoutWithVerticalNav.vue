@@ -51,7 +51,7 @@ import Breadcrumbs from '@/layouts/components/Breadcrumbs.vue'
         <!-- eslint-enable -->
 
         <h1 class="font-weight-medium leading-normal text-xl ">
-          iEPT v2
+          Lan Side Projcet
         </h1>
       </RouterLink>
 
