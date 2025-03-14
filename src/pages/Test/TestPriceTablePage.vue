@@ -19,11 +19,6 @@ const headers: any = [
 
 const priceTableList = ref<PriceTableResponse[]>()
 
-const goToTestPriceTable = (orderNumber: any) => {
-  // 使用 router-name 來跳轉，並傳遞 params
-  router.push({ name: 'TestPriceTableDetail', params: { id: orderNumber } })
-}
-
 onMounted(async () => {
   priceTableList.value = await priceTableService.getPriceTables()
 
@@ -49,12 +44,12 @@ onMounted(async () => {
       :items="priceTableList"
     >
       <template #item.orderNumber="{ item }">
-        <VBtn
-          color="primary"
-          @click="goToTestPriceTable(item.id)"
+        <RouterLink
+          :to="{ name: 'TestPriceTableDetail', params: { id: item.id } }"
+          class="text-primary text-decoration-none"
         >
           {{ item.orderNumber }}
-        </VBtn>
+        </RouterLink>
       </template>
 
       <template #item.contractStartDate="{ item }">
