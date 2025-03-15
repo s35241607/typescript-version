@@ -1,5 +1,5 @@
 export const routes = [
-  { path: '/', redirect: '/home' },
+  { path: '/', redirect: '/home', meta: { breadcrumb: 'Home' } },
   {
     path: '/',
     component: () => import('@/layouts/default.vue'),

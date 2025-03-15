@@ -13,6 +13,9 @@ importers:
 
   .:
     dependencies:
+      '@date-io/luxon':
+        specifier: ^3.2.0
+        version: 3.2.0(luxon@3.5.0)
       '@faker-js/faker':
         specifier: ^9.5.0
         version: 9.5.0
@@ -22,9 +25,6 @@ importers:
       '@iconify-json/bxl':
         specifier: ^1.1.10
         version: 1.2.2
-      '@stylistic/stylelint-config':
-        specifier: ^1.0.1
-        version: 1.0.1(stylelint@16.15.0(typescript@5.7.2))
       '@vueuse/core':
         specifier: ^10.11.1
         version: 10.11.1(vue@3.5.13(typescript@5.7.2))
@@ -34,6 +34,9 @@ importers:
       apexcharts:
         specifier: ^3.54.1
         version: 3.54.1
+      luxon:
+        specifier: ^3.5.0
+        version: 3.5.0
       pinia:
         specifier: ^2.3.0
         version: 2.3.0(typescript@5.7.2)(vue@3.5.13(typescript@5.7.2))
@@ -145,7 +148,7 @@ importers:
         version: 1.7.0
       postcss-scss:
         specifier: ^4.0.9
-        version: 4.0.9(postcss@8.5.3)
+        version: 4.0.9(postcss@8.4.49)
       sass:
         specifier: ~1.76.0
         version: 1.76.0
@@ -160,7 +163,7 @@ importers:
         version: 10.0.0(stylelint@16.15.0(typescript@5.7.2))
       stylelint-config-standard-scss:
         specifier: 13.1.0
-        version: 13.1.0(postcss@8.5.3)(stylelint@16.15.0(typescript@5.7.2))
+        version: 13.1.0(postcss@8.4.49)(stylelint@16.15.0(typescript@5.7.2))
       stylelint-use-logical-spec:
         specifier: 5.0.1
         version: 5.0.1(stylelint@16.15.0(typescript@5.7.2))
@@ -375,6 +378,17 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       postcss-selector-parser: ^7.0.0
+
+  '@date-io/core@3.2.0':
+    resolution: {integrity: sha512-hqwXvY8/YBsT9RwQITG868ZNb1MVFFkF7W1Ecv4P472j/ZWa7EFcgSmxy8PUElNVZfvhdvfv+a8j6NWJqOX5mA==}
+
+  '@date-io/luxon@3.2.0':
+    resolution: {integrity: sha512-oua8GrNs/KDapsj8HUhgVXTFkeGRb4078PvrbHc5EhdMxIS9TW7W8KcfElpXznj2FhU6FQQbyma4iVG98dteWw==}
+    peerDependencies:
+      luxon: ^1.21.3 || ^2.x || ^3.x
+    peerDependenciesMeta:
+      luxon:
+        optional: true
 
   '@dual-bundle/import-meta-resolve@4.1.0':
     resolution: {integrity: sha512-+nxncfwHM5SgAtrVzgpzJOI1ol0PkumhVo469KCf9lUi21IGcY90G98VuHm9VRrUypmAzawAHO9bs6hqeADaVg==}
@@ -885,18 +899,6 @@ packages:
     peerDependencies:
       eslint: '*'
       typescript: '*'
-
-  '@stylistic/stylelint-config@1.0.1':
-    resolution: {integrity: sha512-JgFP88HZEyo34k9RpWVdcQJtLPrMxYE58IO3qypXhmvE/NmZohj+xjDtQ8UfaarnYsLecnldw57/GHum07Ctdw==}
-    engines: {node: ^18.12 || >=20.9}
-    peerDependencies:
-      stylelint: ^16.0.2
-
-  '@stylistic/stylelint-plugin@2.1.3':
-    resolution: {integrity: sha512-/KUcqX36AbbUk7KvNuM0dWv2XSlPa1M12CPcC//eA4MNEFsZFl+2Kf8UZCLjlIWIrDNitd591vaVkXfOwUtsFQ==}
-    engines: {node: ^18.12 || >=20.9}
-    peerDependencies:
-      stylelint: ^16.0.2
 
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -2400,6 +2402,10 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  luxon@3.5.0:
+    resolution: {integrity: sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ==}
+    engines: {node: '>=12'}
+
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
@@ -3751,6 +3757,14 @@ snapshots:
     dependencies:
       postcss-selector-parser: 7.1.0
 
+  '@date-io/core@3.2.0': {}
+
+  '@date-io/luxon@3.2.0(luxon@3.5.0)':
+    dependencies:
+      '@date-io/core': 3.2.0
+    optionalDependencies:
+      luxon: 3.5.0
+
   '@dual-bundle/import-meta-resolve@4.1.0': {}
 
   '@es-joy/jsdoccomment@0.41.0':
@@ -4117,22 +4131,6 @@ snapshots:
       typescript: 5.7.2
     transitivePeerDependencies:
       - supports-color
-
-  '@stylistic/stylelint-config@1.0.1(stylelint@16.15.0(typescript@5.7.2))':
-    dependencies:
-      '@stylistic/stylelint-plugin': 2.1.3(stylelint@16.15.0(typescript@5.7.2))
-      stylelint: 16.15.0(typescript@5.7.2)
-
-  '@stylistic/stylelint-plugin@2.1.3(stylelint@16.15.0(typescript@5.7.2))':
-    dependencies:
-      '@csstools/css-parser-algorithms': 2.7.1(@csstools/css-tokenizer@2.4.1)
-      '@csstools/css-tokenizer': 2.4.1
-      '@csstools/media-query-list-parser': 2.1.13(@csstools/css-parser-algorithms@2.7.1(@csstools/css-tokenizer@2.4.1))(@csstools/css-tokenizer@2.4.1)
-      is-plain-object: 5.0.0
-      postcss-selector-parser: 6.1.2
-      postcss-value-parser: 4.2.0
-      style-search: 0.1.0
-      stylelint: 16.15.0(typescript@5.7.2)
 
   '@trysound/sax@0.2.0': {}
 
@@ -6037,6 +6035,8 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  luxon@3.5.0: {}
+
   magic-string@0.30.17:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -6322,9 +6322,9 @@ snapshots:
     dependencies:
       postcss: 8.5.3
 
-  postcss-scss@4.0.9(postcss@8.5.3):
+  postcss-scss@4.0.9(postcss@8.4.49):
     dependencies:
-      postcss: 8.5.3
+      postcss: 8.4.49
 
   postcss-selector-parser@6.1.2:
     dependencies:
@@ -6666,26 +6666,26 @@ snapshots:
       stylelint: 16.15.0(typescript@5.7.2)
       stylelint-order: 6.0.3(stylelint@16.15.0(typescript@5.7.2))
 
-  stylelint-config-recommended-scss@14.1.0(postcss@8.5.3)(stylelint@16.15.0(typescript@5.7.2)):
+  stylelint-config-recommended-scss@14.1.0(postcss@8.4.49)(stylelint@16.15.0(typescript@5.7.2)):
     dependencies:
-      postcss-scss: 4.0.9(postcss@8.5.3)
+      postcss-scss: 4.0.9(postcss@8.4.49)
       stylelint: 16.15.0(typescript@5.7.2)
       stylelint-config-recommended: 14.0.1(stylelint@16.15.0(typescript@5.7.2))
       stylelint-scss: 6.10.0(stylelint@16.15.0(typescript@5.7.2))
     optionalDependencies:
-      postcss: 8.5.3
+      postcss: 8.4.49
 
   stylelint-config-recommended@14.0.1(stylelint@16.15.0(typescript@5.7.2)):
     dependencies:
       stylelint: 16.15.0(typescript@5.7.2)
 
-  stylelint-config-standard-scss@13.1.0(postcss@8.5.3)(stylelint@16.15.0(typescript@5.7.2)):
+  stylelint-config-standard-scss@13.1.0(postcss@8.4.49)(stylelint@16.15.0(typescript@5.7.2)):
     dependencies:
       stylelint: 16.15.0(typescript@5.7.2)
-      stylelint-config-recommended-scss: 14.1.0(postcss@8.5.3)(stylelint@16.15.0(typescript@5.7.2))
+      stylelint-config-recommended-scss: 14.1.0(postcss@8.4.49)(stylelint@16.15.0(typescript@5.7.2))
       stylelint-config-standard: 36.0.1(stylelint@16.15.0(typescript@5.7.2))
     optionalDependencies:
-      postcss: 8.5.3
+      postcss: 8.4.49
 
   stylelint-config-standard@36.0.1(stylelint@16.15.0(typescript@5.7.2)):
     dependencies:

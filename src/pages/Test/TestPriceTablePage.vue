@@ -5,8 +5,6 @@ import { priceTableService } from '@/api/services/mockService'
 import type { PriceTableResponse } from '@/api/services/mockService'
 import { formatDate } from '@/utils/date'
 
-const router = useRouter()
-
 const items = ref<any[]>()
 
 const headers: any = [

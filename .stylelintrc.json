@@ -1,8 +1,7 @@
 {
   "extends": [
     "stylelint-config-standard-scss",
-    "stylelint-config-idiomatic-order",
-    "@stylistic/stylelint-config"
+    "stylelint-config-idiomatic-order"
   ],
   "plugins": [
     "stylelint-use-logical-spec",

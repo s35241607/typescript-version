@@ -150,7 +150,7 @@ module.exports = {
     'vue/block-tag-newline': 'error',
     'vue/component-api-style': 'error',
     'vue/component-name-in-template-casing': ['error', 'PascalCase', { registeredComponentsOnly: false, ignores: ['/^swiper-/'] }],
-    'vue/custom-event-name-casing': ['error', 'camelCase', {
+    'vue/custom-event-name-casing': ['error', 'kebab-case', {
       ignores: [
         '/^(click):[a-z]+((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?/',
       ],

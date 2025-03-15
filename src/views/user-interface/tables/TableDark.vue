@@ -84,6 +84,6 @@ const desserts = [
 
 <style lang="scss">
 .v-table {
-  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity))
+  color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
 }
 </style>

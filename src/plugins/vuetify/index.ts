@@ -1,5 +1,5 @@
 import type { App } from 'vue'
-import LuxonAdapter from '@date-io/luxon'
+import adapter from '@date-io/luxon'
 
 import { createVuetify } from 'vuetify'
 import { VBtn } from 'vuetify/components/VBtn'
@@ -23,8 +23,9 @@ export default function (app: App) {
       defaultTheme: localStorage.getItem('theme') ?? 'dark',
       themes,
     },
+
     date: {
-      adapter: LuxonAdapter,
+      adapter,
       formats: {
         keyboardDate: 'yyyy-MM-dd',
       },

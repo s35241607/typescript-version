@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
 import { VDateInput } from 'vuetify/labs/components'
 import type { EqpOptionResponse, MachineResponse, PriceTableResponse } from '@/api/services/mockService'
 import { eqpOptionService, machineService, priceTableService } from '@/api/services/mockService'
