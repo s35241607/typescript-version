@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # 只在 `main` 分支推送時觸發
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7  # 設定 pnpm 版本
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build the project
+        run: pnpm build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages  # 設定部署的分支
+          folder: dist      # 設定要部署的資料夾
+          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub Token 進行授權

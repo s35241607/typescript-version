@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --open",
     "build": "vite build",
+    "deploy": "vite build && gh-pages -d dist",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint . -c .eslintrc.cjs --fix --ext .ts,.js,.cjs,.vue,.tsx,.jsx",
@@ -58,6 +59,7 @@
     "eslint-plugin-sonarjs": "^0.24.0",
     "eslint-plugin-unicorn": "^51.0.1",
     "eslint-plugin-vue": "^9.32.0",
+    "gh-pages": "^6.3.0",
     "postcss-html": "^1.7.0",
     "postcss-scss": "^4.0.9",
     "sass": "~1.76.0",
