@@ -1,15 +1,37 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { VDateInput } from 'vuetify/labs/components'
+
+// import { VDateInput } from 'vuetify/labs/components'
 import type { EqpOptionResponse, MachineResponse, PriceTableResponse } from '@/api/services/mockService'
 import { eqpOptionService, machineService, priceTableService } from '@/api/services/mockService'
+import FileUploader from '@/components/FileUploader.vue'
 
 // 初始化 priceTable 時確保是空對象
 const priceTable = ref<PriceTableResponse>({} as PriceTableResponse)
 const machine = ref<MachineResponse | undefined>({} as MachineResponse)
 const eqpOptions = ref<EqpOptionResponse[]>()
 const eqpOptionMap: any = ref()
+
+// 附件相關
+const attachments = ref<any[]>([])
+
+// 處理附件更新
+const handleAttachmentsUpdate = (newAttachments: any[]) => {
+  attachments.value = newAttachments
+
+  // 這裡可以添加其他邏輯，例如更新priceTable中的附件信息
+}
+
+// 處理上傳成功
+const handleUploadSuccess = (fileData: any) => {
+  console.log('文件上傳成功:', fileData)
+}
+
+// 處理上傳失敗
+const handleUploadError = (error: any) => {
+  console.error('文件上傳失敗:', error)
+}
 
 const editMode = ref<boolean>(false)
 
@@ -94,6 +116,28 @@ onBeforeMount(async () => {
 
     return map
   }, {})
+
+  // 加載附件數據
+  if (priceTable.value.id) {
+    try {
+      // 這裡應該調用實際的API來獲取附件列表
+      // 模擬從後端獲取附件數據
+      const mockAttachments: Array<{
+        id: string
+        name: string
+        size: number
+        type: string
+        url: string
+      }> = [
+        // 這裡可以添加模擬數據，實際應該從API獲取
+      ]
+
+      attachments.value = mockAttachments
+    }
+    catch (error) {
+      console.error('獲取附件失敗', error)
+    }
+  }
 })
 
 onMounted(() => {
@@ -327,10 +371,8 @@ onMounted(() => {
           md="3"
           sm="6"
         >
-          <VTextField
-            v-model="priceTable.currency"
-            label="Currency"
-          />
+          <label>Currency</label>
+          <VTextField v-model="priceTable.currency" />
         </VCol>
         <!-- 使用 AutoComplete 來呈現 Owner -->
         <VCol
@@ -338,21 +380,20 @@ onMounted(() => {
           md="3"
           sm="6"
         >
-          <VTextField
-            v-model="priceTable.ownerId as number"
-            label="Owner"
-          />
+          <label>Owner</label>
+          <VTextField v-model="priceTable.ownerId as number" />
         </VCol>
 
         <!-- 使用 VDateInput 來呈現 Contract Start Date -->
         <VCol
-          cols="12"
+          cols="
+            12"
           md="3"
           sm="6"
         >
-          <VDateInput
+          <label>Contract Start Date</label>
+          <VTextField
             v-model="priceTable.contractStartDate as Date"
-            label="Contract Start Date"
             :rules="dateRules"
           />
         </VCol>
@@ -363,9 +404,9 @@ onMounted(() => {
           md="3"
           sm="6"
         >
-          <VDateInput
+          <label>Contract End Date</label>
+          <VTextField
             v-model="priceTable.contractEndDate as Date"
-            label="Contract End Date"
             :rules="dateRules"
           />
         </VCol>
@@ -375,16 +416,26 @@ onMounted(() => {
           cols="12"
           md="6"
         >
-          <VTextField
-            v-model="priceTable.remark"
-            label="Remark"
-          />
+          <label>Remark</label>
+          <VTextField v-model="priceTable.remark" />
         </VCol>
         <VCol
           cols="12"
           md="6"
         >
-          Attachment:
+          <label>Attachment</label>
+          <div class="attachment-field">
+            <FileUploader
+              :initial-attachments="attachments"
+              :related-id="priceTable.id"
+              related-type="price-table"
+              upload-url="/api/attachments/upload"
+              delete-url="/api/attachments/delete"
+              @update:attachments="handleAttachmentsUpdate"
+              @upload-success="handleUploadSuccess"
+              @upload-error="handleUploadError"
+            />
+          </div>
         </VCol>
       </VRow>
     </VCardText>

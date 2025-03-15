@@ -2,11 +2,14 @@
 import TestToast from '@/views/Test/TestToast.vue'
 import TestDeleteConfirm from '@/views/Test/TestDeleteConfirm.vue'
 import TestDateInput from '@/views/Test/TestDateInput.vue'
+import TestFileUplaod from '@/views/Test/TestFileUplaod.vue'
 </script>
 
 <template>
+  <!-- 👉 test toast -->
   <TestToast />
 
+  <!-- 👉 test delete confirm -->
   <VCard class="mt-4">
     <VCardItem>
       <VCardTitle>
@@ -26,7 +29,19 @@ import TestDateInput from '@/views/Test/TestDateInput.vue'
       </VCardTitle>
     </VCardItem>
     <VCardText>
-      <TestDateInput />
+      <!-- <TestDateInput /> -->
+    </VCardText>
+  </VCard>
+
+  <!-- 👉 test file upload -->
+  <VCard class="mt-4">
+    <VCardItem>
+      <VCardTitle>
+        Test File Upload
+      </VCardTitle>
+    </VCardItem>
+    <VCardText>
+      <TestFileUplaod />
     </VCardText>
   </VCard>
 </template>
