@@ -3,19 +3,23 @@ import { ref } from 'vue'
 import EnhancedDataTable from '@/components/EnhancedDataTable.vue'
 
 const headers = ref([
-  { title: '编号', key: 'id', sortable: true },
-  { title: '名称', key: 'name', sortable: true },
-  { title: '描述', key: 'description', sortable: false },
-  { title: '状态', key: 'status', sortable: true },
-  { title: '创建日期', key: 'createdAt', sortable: true },
+  { title: 'ID', key: 'id', sortable: true },
+  { title: 'Project Name', key: 'name', sortable: true },
+  { title: 'Description', key: 'description', sortable: false },
+  { title: 'Status', key: 'status', sortable: true },
+  { title: 'Created Date', key: 'createdAt', sortable: true },
+  { title: 'Priority', key: 'priority', sortable: true },
+  { title: 'Budget (USD)', key: 'budget', sortable: true },
+  { title: 'Progress (%)', key: 'progress', sortable: true },
+  { title: 'Active', key: 'active', sortable: true },
 ])
 
 const items = ref([
-  { id: 1, name: '项目 A', description: '这是项目 A 的描述', status: '进行中', createdAt: '2023-01-01' },
-  { id: 2, name: '项目 B', description: '这是项目 B 的描述', status: '已完成', createdAt: '2023-01-15' },
-  { id: 3, name: '项目 C', description: '这是项目 C 的描述', status: '待处理', createdAt: '2023-02-01' },
-  { id: 4, name: '项目 D', description: '这是项目 D 的描述', status: '进行中', createdAt: '2023-02-15' },
-  { id: 5, name: '项目 E', description: '这是项目 E 的描述', status: '已完成', createdAt: '2023-03-01' },
+  { id: 1, name: 'Project Alpha', description: 'Description of Project Alpha', status: 'In Progress', createdAt: '2024-02-01', priority: 'High', budget: 50000, progress: 60, active: true },
+  { id: 2, name: 'Project Beta', description: 'Description of Project Beta', status: 'Completed', createdAt: '2024-01-15', priority: 'Medium', budget: 75000, progress: 100, active: false },
+  { id: 3, name: 'Project Gamma', description: 'Description of Project Gamma', status: 'Pending', createdAt: '2024-03-01', priority: 'Low', budget: 30000, progress: 20, active: true },
+  { id: 4, name: 'Project Delta', description: 'Description of Project Delta', status: 'In Progress', createdAt: '2024-02-20', priority: 'High', budget: 90000, progress: 45, active: true },
+  { id: 5, name: 'Project Epsilon', description: 'Description of Project Epsilon', status: 'Completed', createdAt: '2024-01-05', priority: 'Medium', budget: 60000, progress: 100, active: false },
 ])
 
 const loading = ref(false)
