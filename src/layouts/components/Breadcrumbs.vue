@@ -24,12 +24,6 @@ const breadcrumbs = computed(() => {
     if (title?.startsWith(':'))
       title = route.params[title.slice(1)] as string
 
-    // if (!to)
-    //   to = '/'
-
-    // if (!title)
-    //   title = 'Home'
-
     return {
       title,
       to,
