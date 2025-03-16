@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import TestToast from '@/views/Test/TestToast.vue'
 import TestDeleteConfirm from '@/views/Test/TestDeleteConfirm.vue'
-import TestDateInput from '@/views/Test/TestDateInput.vue'
+
+// import TestDateInput from '@/views/Test/TestDateInput.vue'
 import TestFileUplaod from '@/views/Test/TestFileUplaod.vue'
+import TableDemo from '@/views/Test/TableDemo.vue'
 </script>
 
 <template>
@@ -42,6 +44,18 @@ import TestFileUplaod from '@/views/Test/TestFileUplaod.vue'
     </VCardItem>
     <VCardText>
       <TestFileUplaod />
+    </VCardText>
+  </VCard>
+
+  <!-- 👉 test data table -->
+  <VCard class="mt-4">
+    <VCardItem>
+      <VCardTitle>
+        Test Data Table
+      </VCardTitle>
+    </VCardItem>
+    <VCardText>
+      <TableDemo />
     </VCardText>
   </VCard>
 </template>
