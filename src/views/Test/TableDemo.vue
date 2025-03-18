@@ -26,15 +26,15 @@ const items = ref([
 
 // AdvanceDataTable 的数据
 const advanceColumns = ref([
-  { title: 'ID', key: 'id', sortable: true, width: 80 },
-  { title: '项目名称', key: 'name', sortable: true, editable: true },
+  { title: 'ID', key: 'id', sortable: false, width: 80 },
+  { title: '项目名称', key: 'name', sortable: false, editable: true },
   { title: '描述', key: 'description', sortable: false, editable: true },
-  { title: '状态', key: 'status', sortable: true, editable: true },
-  { title: '创建日期', key: 'createdAt', sortable: true },
-  { title: '优先级', key: 'priority', sortable: true, editable: true },
-  { title: '预算 (USD)', key: 'budget', sortable: true, editable: true },
-  { title: '进度 (%)', key: 'progress', sortable: true, editable: true },
-  { title: '活跃状态', key: 'active', sortable: true, editable: true },
+  { title: '状态', key: 'status', sortable: false, editable: true },
+  { title: '创建日期', key: 'createdAt', sortable: false },
+  { title: '优先级', key: 'priority', sortable: false, editable: true },
+  { title: '预算 (USD)', key: 'budget', sortable: false, editable: true },
+  { title: '进度 (%)', key: 'progress', sortable: false, editable: true },
+  { title: '活跃状态', key: 'active', sortable: false, editable: true },
 ])
 
 const advanceItems = ref([...items.value])
