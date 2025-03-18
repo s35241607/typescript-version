@@ -13,6 +13,8 @@ interface Column {
   editable?: boolean
   formatter?: (value: any) => string
   hidden?: boolean
+  minWidth?: number
+  maxWidth?: number
 }
 
 interface Row {
@@ -65,6 +67,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  multiColumnResize: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits([
@@ -88,6 +94,7 @@ const editingValue = ref<any>(null)
 const resizingColumn = ref<string | null>(null)
 const startX = ref<number>(0)
 const startWidth = ref<number>(0)
+const isShiftKeyPressed = ref<boolean>(false)
 
 // 監聽 props 變化
 watch(() => props.items, newItems => {
@@ -266,24 +273,176 @@ const handleColumnResizeMove = (event: MouseEvent) => {
   event.stopPropagation()
   event.preventDefault()
 
+  // 更新Shift键状态
+  isShiftKeyPressed.value = event.shiftKey
+
   const diffX = event.clientX - startX.value
   const newWidth = Math.max(50, startWidth.value + diffX)
 
+  // 当前调整的列索引
   const columnIndex = tableColumns.value.findIndex(col => col.key === resizingColumn.value)
-  if (columnIndex > -1)
+
+  if (columnIndex > -1) {
+    // 设置当前列的宽度
     tableColumns.value[columnIndex].width = newWidth
+
+    // 如果按住Shift键且启用了多列调整
+    if (isShiftKeyPressed.value && props.multiColumnResize) {
+      // 获取当前调整列右侧所有可见列
+      const rightColumns = visibleColumns.value.slice(visibleColumns.value.findIndex(col => col.key === resizingColumn.value) + 1)
+
+      // 调整所有右侧列的宽度
+      rightColumns.forEach(col => {
+        const colIndex = tableColumns.value.findIndex(c => c.key === col.key)
+        if (colIndex > -1 && tableColumns.value[colIndex].resizable !== false) {
+          // 使用相同的宽度增量
+          const currentWidth = tableColumns.value[colIndex].width || 100
+
+          tableColumns.value[colIndex].width = Math.max(50, currentWidth + diffX)
+        }
+      })
+    }
+
+    // 更新调整指示线位置
+    const resizeGuide = document.getElementById('column-resize-guide')
+    if (resizeGuide) {
+      const tableRect = document.querySelector('.table-wrapper')?.getBoundingClientRect()
+      if (tableRect) {
+        const leftPosition = event.clientX - tableRect.left
+
+        resizeGuide.style.left = `${leftPosition}px`
+        resizeGuide.style.display = 'block'
+
+        // 如果按住Shift键，显示多列调整指示
+        resizeGuide.classList.toggle('multi-column-resize', isShiftKeyPressed.value && props.multiColumnResize)
+      }
+    }
+  }
 }
 
 const handleColumnResizeEnd = () => {
   if (resizingColumn.value) {
-    emit('column-resize', { key: resizingColumn.value, width: tableColumns.value.find(col => col.key === resizingColumn.value)?.width })
+    const newWidth = tableColumns.value.find(col => col.key === resizingColumn.value)?.width
+
+    emit('column-resize', {
+      key: resizingColumn.value,
+      width: newWidth,
+      isMultiResize: isShiftKeyPressed.value && props.multiColumnResize,
+    })
+
+    // 隐藏调整指示线
+    const resizeGuide = document.getElementById('column-resize-guide')
+    if (resizeGuide) {
+      resizeGuide.style.display = 'none'
+      resizeGuide.classList.remove('multi-column-resize')
+    }
+
+    // 重置状态
     resizingColumn.value = null
+    isShiftKeyPressed.value = false
   }
 
   document.body.classList.remove('resizing-active')
 
   document.removeEventListener('mousemove', handleColumnResizeMove)
   document.removeEventListener('mouseup', handleColumnResizeEnd)
+}
+
+// 格式化顯示函數
+const formatCellValue = (value: any, column: Column) => {
+  if (column.formatter)
+    return column.formatter(value)
+
+  return value !== undefined && value !== null ? String(value) : ''
+}
+
+// 辅助函数：计算内容的最大宽度
+const calculateMaxContentWidth = (contents: string[]): number => {
+  // 创建临时元素以计算文本宽度
+  const tempEl = document.createElement('div')
+
+  tempEl.style.position = 'absolute'
+  tempEl.style.visibility = 'hidden'
+  tempEl.style.whiteSpace = 'nowrap'
+  tempEl.style.fontFamily = getComputedStyle(document.body).fontFamily
+  tempEl.style.fontSize = getComputedStyle(document.body).fontSize
+  tempEl.style.padding = '0 8px' // 添加一些内边距
+
+  document.body.appendChild(tempEl)
+
+  let maxWidth = 0
+
+  contents.forEach(content => {
+    tempEl.textContent = content
+
+    const width = tempEl.offsetWidth
+
+    maxWidth = Math.max(maxWidth, width)
+  })
+
+  document.body.removeChild(tempEl)
+
+  // 添加一些额外的空间，使其看起来更好
+  return maxWidth + 20 // 额外空间
+}
+
+// 自动调整列宽，计算单元格内容的最大宽度
+const autoAdjustColumnWidth = (columnKey: string) => {
+  const column = tableColumns.value.find(col => col.key === columnKey)
+  if (!column)
+    return
+
+  // 获取所有列中该列的数据
+  const cellsContent: string[] = []
+
+  // 首先添加列标题
+  cellsContent.push(column.title)
+
+  // 然后添加所有该列的单元格内容
+  tableItems.value.forEach(item => {
+    const value = item[columnKey]
+    const formattedValue = formatCellValue(value, column)
+
+    cellsContent.push(formattedValue)
+  })
+
+  // 计算最大宽度
+  const calculatedWidth = calculateMaxContentWidth(cellsContent)
+
+  // 应用最小宽度和最大宽度限制
+  const minWidth = column.minWidth || 50
+  const maxWidth = column.maxWidth || 500
+  const adjustedWidth = Math.max(minWidth, Math.min(maxWidth, calculatedWidth))
+
+  // 更新列宽
+  const columnIndex = tableColumns.value.findIndex(col => col.key === columnKey)
+  if (columnIndex > -1) {
+    tableColumns.value[columnIndex].width = adjustedWidth
+    emit('column-resize', { key: columnKey, width: adjustedWidth })
+  }
+}
+
+// 键盘事件处理
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Shift') {
+    isShiftKeyPressed.value = true
+
+    // 更新指示线样式
+    const resizeGuide = document.getElementById('column-resize-guide')
+    if (resizeGuide && props.multiColumnResize)
+      resizeGuide.classList.add('multi-column-resize')
+  }
+}
+
+const handleKeyUp = (event: KeyboardEvent) => {
+  if (event.key === 'Shift') {
+    isShiftKeyPressed.value = false
+
+    // 更新指示线样式
+    const resizeGuide = document.getElementById('column-resize-guide')
+    if (resizeGuide)
+      resizeGuide.classList.remove('multi-column-resize')
+  }
 }
 
 // 欄位寬度調整
@@ -295,14 +454,51 @@ const handleColumnResizeStart = (event: MouseEvent, columnKey: string, currentWi
   event.stopPropagation()
   event.preventDefault()
 
+  // 初始化Shift键状态
+  isShiftKeyPressed.value = event.shiftKey
+
+  // 检测双击事件 - 自动调整列宽
+  if (event.detail === 2) {
+    // 自动调整列宽
+    autoAdjustColumnWidth(columnKey)
+
+    return
+  }
+
   document.body.classList.add('resizing-active')
 
   resizingColumn.value = columnKey
   startX.value = event.clientX
   startWidth.value = currentWidth || 100
 
+  // 创建或显示调整指示线
+  let resizeGuide = document.getElementById('column-resize-guide')
+  if (!resizeGuide) {
+    resizeGuide = document.createElement('div')
+    resizeGuide.id = 'column-resize-guide'
+    resizeGuide.className = 'column-resize-guide'
+    document.querySelector('.table-wrapper')?.appendChild(resizeGuide)
+  }
+
+  // 设置指示线位置
+  const tableRect = document.querySelector('.table-wrapper')?.getBoundingClientRect()
+  if (tableRect) {
+    const leftPosition = event.clientX - tableRect.left
+
+    resizeGuide.style.left = `${leftPosition}px`
+    resizeGuide.style.display = 'block'
+    resizeGuide.style.height = `${tableRect.height}px`
+
+    // 如果按住Shift键，显示多列调整指示
+    resizeGuide.classList.toggle('multi-column-resize', isShiftKeyPressed.value && props.multiColumnResize)
+  }
+
   document.addEventListener('mousemove', handleColumnResizeMove)
   document.addEventListener('mouseup', handleColumnResizeEnd)
+
+  // 添加键盘事件监听
+  document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('keyup', handleKeyUp)
 }
 
 // 點擊編輯功能
@@ -334,15 +530,9 @@ const cancelEdit = () => {
 onMounted(() => {
   document.removeEventListener('mousemove', handleColumnResizeMove)
   document.removeEventListener('mouseup', handleColumnResizeEnd)
+  document.removeEventListener('keydown', handleKeyDown)
+  document.removeEventListener('keyup', handleKeyUp)
 })
-
-// 格式化顯示函數
-const formatCellValue = (value: any, column: Column) => {
-  if (column.formatter)
-    return column.formatter(value)
-
-  return value !== undefined && value !== null ? String(value) : ''
-}
 </script>
 
 <template>
@@ -355,6 +545,7 @@ const formatCellValue = (value: any, column: Column) => {
         <VTable
           :density="dense ? 'compact' : 'default'"
           fixed-header
+          class="fixed-width-table"
         >
           <thead>
             <tr>
@@ -391,6 +582,7 @@ const formatCellValue = (value: any, column: Column) => {
                 v-for="column in visibleColumns"
                 :key="column.key"
                 :width="column.width ? `${column.width}px` : 'auto'"
+                :style="{ width: column.width ? `${column.width}px` : 'auto', minWidth: column.width ? `${column.width}px` : '100px' }"
                 class="column-header"
                 :class="{
                   sortable: column.sortable && sortable,
@@ -492,6 +684,7 @@ const formatCellValue = (value: any, column: Column) => {
                   v-for="column in visibleColumns"
                   :key="`${item.id}-${column.key}`"
                   class="data-cell"
+                  :style="{ width: column.width ? `${column.width}px` : 'auto', minWidth: column.width ? `${column.width}px` : '100px' }"
                   :class="{
                     editable: column.editable && editableOnClick,
                   }"
@@ -562,6 +755,18 @@ const formatCellValue = (value: any, column: Column) => {
   overflow-x: auto;
 }
 
+/* 固定宽度表格样式 */
+.fixed-width-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  inline-size: auto;
+
+  /* 修改为最小宽度100%，允许表格变宽 */
+  min-inline-size: 100%;
+  table-layout: fixed;
+  white-space: nowrap;
+}
+
 .sticky-header th {
   position: sticky;
   z-index: 2;
@@ -571,8 +776,18 @@ const formatCellValue = (value: any, column: Column) => {
 
 .column-header {
   position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: background-color 0.2s ease;
   user-select: none;
+  white-space: nowrap;
+}
+
+/* 确保单元格不会随着调整列宽而变化大小 */
+.data-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .column-header.column-drag-over {
@@ -624,6 +839,7 @@ const formatCellValue = (value: any, column: Column) => {
   inline-size: 10px;
   inset-block-start: 0;
   inset-inline-end: -5px;
+  transition: background-color 0.15s ease;
 }
 
 .resize-handle-indicator {
@@ -631,6 +847,7 @@ const formatCellValue = (value: any, column: Column) => {
   background-color: rgba(0, 0, 0, 15%);
   block-size: 60%;
   inline-size: 2px;
+  transition: background-color 0.15s ease, inline-size 0.15s ease;
 }
 
 .resize-handle:hover {
@@ -645,6 +862,58 @@ const formatCellValue = (value: any, column: Column) => {
 .resize-handle:active .resize-handle-indicator {
   background-color: var(--v-theme-primary, #1976d2);
   inline-size: 3px;
+}
+
+/* 添加双击提示 */
+.resize-handle::after {
+  position: absolute;
+  content: '';
+  font-size: 10px;
+  inset-block-end: -15px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-5px);
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
+}
+
+.resize-handle:hover::after {
+  content: '双击自动调整, Shift拖动调整多列';
+  opacity: 0.7;
+  transform: translateY(0);
+}
+
+/* 列宽调整指示线 */
+.column-resize-guide {
+  position: absolute;
+  z-index: 1000;
+  display: none;
+  background-color: var(--v-theme-primary, #1976d2);
+  box-shadow: 0 0 4px rgba(25, 118, 210, 50%);
+  inline-size: 2px;
+  inset-block-start: 0;
+  pointer-events: none;
+}
+
+/* 多列调整指示线样式 */
+.column-resize-guide.multi-column-resize {
+  background-color: #ff5722;
+  box-shadow: 0 0 6px rgba(255, 87, 34, 50%);
+  inline-size: 3px;
+}
+
+.column-resize-guide.multi-column-resize::after {
+  position: absolute;
+  border-radius: 4px;
+  background-color: #ff5722;
+  color: white;
+  content: '多列调整';
+  font-size: 12px;
+  inset-block-start: -20px;
+  inset-inline-start: 5px;
+  padding-block: 2px;
+  padding-inline: 6px;
+  white-space: nowrap;
 }
 
 .resizing-active {
