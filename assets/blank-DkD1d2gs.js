@@ -1,0 +1,1 @@
+import{_ as o,c as t,o as a,b as c,m as n}from"./index-MR7RJxXF.js";const s={},r={class:"layout-wrapper layout-blank","data-allow-mismatch":""};function _(l,m){const e=n("RouterView");return a(),t("div",r,[c(e)])}const p=o(s,[["render",_]]);export{p as default};
