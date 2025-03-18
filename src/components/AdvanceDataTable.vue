@@ -214,13 +214,22 @@ const handleColumnDragStart = (event: DragEvent, columnKey: string) => {
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.setData('text/plain', columnKey)
   }
+
+  // 阻止事件冒泡，避免与其他事件冲突
+  event.stopPropagation()
 }
 
 const handleColumnDragOver = (event: DragEvent) => {
-  if (!props.columnDraggable)
+  if (!props.columnDraggable || !draggedColumn)
     return
 
   event.preventDefault()
+
+  // 添加视觉反馈
+  const target = event.currentTarget as HTMLElement
+  if (target && target.classList)
+    target.classList.add('column-drag-over')
+
   if (event.dataTransfer)
     event.dataTransfer.dropEffect = 'move'
 }
@@ -231,6 +240,11 @@ const handleColumnDrop = (event: DragEvent, targetColumnKey: string) => {
 
   event.preventDefault()
 
+  // 移除所有拖曳样式
+  document.querySelectorAll('.column-drag-over').forEach(el => {
+    el.classList.remove('column-drag-over')
+  })
+
   const draggedIndex = tableColumns.value.findIndex(col => col.key === draggedColumn)
   const targetIndex = tableColumns.value.findIndex(col => col.key === targetColumnKey)
 
@@ -238,29 +252,19 @@ const handleColumnDrop = (event: DragEvent, targetColumnKey: string) => {
     const [removed] = tableColumns.value.splice(draggedIndex, 1)
 
     tableColumns.value.splice(targetIndex, 0, removed)
-
     emit('column-drag', { draggedKey: draggedColumn, targetKey: targetColumnKey, newColumns: tableColumns.value })
   }
 
   draggedColumn = null
 }
 
-// 欄位寬度調整
-const handleColumnResizeStart = (event: MouseEvent, columnKey: string, currentWidth: number) => {
-  if (!props.columnResizable)
-    return
-
-  resizingColumn.value = columnKey
-  startX.value = event.clientX
-  startWidth.value = currentWidth || 100
-
-  document.addEventListener('mousemove', handleColumnResizeMove)
-  document.addEventListener('mouseup', handleColumnResizeEnd)
-}
-
 const handleColumnResizeMove = (event: MouseEvent) => {
   if (!resizingColumn.value)
     return
+
+  // 阻止事件冒泡
+  event.stopPropagation()
+  event.preventDefault()
 
   const diffX = event.clientX - startX.value
   const newWidth = Math.max(50, startWidth.value + diffX)
@@ -276,8 +280,29 @@ const handleColumnResizeEnd = () => {
     resizingColumn.value = null
   }
 
+  document.body.classList.remove('resizing-active')
+
   document.removeEventListener('mousemove', handleColumnResizeMove)
   document.removeEventListener('mouseup', handleColumnResizeEnd)
+}
+
+// 欄位寬度調整
+const handleColumnResizeStart = (event: MouseEvent, columnKey: string, currentWidth: number) => {
+  if (!props.columnResizable)
+    return
+
+  // 阻止事件冒泡，避免触发其他事件
+  event.stopPropagation()
+  event.preventDefault()
+
+  document.body.classList.add('resizing-active')
+
+  resizingColumn.value = columnKey
+  startX.value = event.clientX
+  startWidth.value = currentWidth || 100
+
+  document.addEventListener('mousemove', handleColumnResizeMove)
+  document.addEventListener('mouseup', handleColumnResizeEnd)
 }
 
 // 點擊編輯功能
@@ -333,6 +358,18 @@ const formatCellValue = (value: any, column: Column) => {
         >
           <thead>
             <tr>
+              <!-- 拖曳图标列 -->
+              <th
+                v-if="rowDraggable"
+                class="drag-handle-header"
+                width="40"
+              >
+                <VIcon
+                  icon="ri-drag-move-line"
+                  size="small"
+                />
+              </th>
+
               <!-- 行號欄位 -->
               <th
                 v-if="rowNumberVisible"
@@ -359,17 +396,28 @@ const formatCellValue = (value: any, column: Column) => {
                   sortable: column.sortable && sortable,
                   sorted: sortBy === column.key,
                   desc: sortBy === column.key && sortDesc,
-                  draggable: column.draggable && columnDraggable,
-                  resizable: column.resizable && columnResizable,
+                  resizable: columnResizable,
                 }"
-                draggable="true"
-                @dragstart="handleColumnDragStart($event, column.key)"
-                @dragover="handleColumnDragOver"
-                @drop="handleColumnDrop($event, column.key)"
+                @dragover.prevent="columnDraggable && handleColumnDragOver($event)"
+                @drop.prevent="columnDraggable && handleColumnDrop($event, column.key)"
                 @click="column.sortable && sortable ? handleSort(column.key) : null"
               >
                 <div class="column-header-content">
-                  {{ column.title }}
+                  <div
+                    v-if="column.draggable && columnDraggable"
+                    class="column-drag-handle"
+                    draggable="true"
+                    @dragstart="handleColumnDragStart($event, column.key)"
+                    @click.stop
+                  >
+                    <VIcon
+                      icon="ri-drag-move-2-line"
+                      size="small"
+                    />
+                  </div>
+                  <div class="column-title">
+                    {{ column.title }}
+                  </div>
                   <VIcon
                     v-if="column.sortable && sortable && sortBy === column.key"
                     :icon="sortDesc ? 'ri-arrow-down-line' : 'ri-arrow-up-line'"
@@ -378,10 +426,12 @@ const formatCellValue = (value: any, column: Column) => {
                   />
                 </div>
                 <div
-                  v-if="column.resizable && columnResizable"
+                  v-if="columnResizable"
                   class="resize-handle"
-                  @mousedown="handleColumnResizeStart($event, column.key, column.width || 100)"
-                />
+                  @mousedown.stop="handleColumnResizeStart($event, column.key, column.width || 100)"
+                >
+                  <div class="resize-handle-indicator" />
+                </div>
               </th>
             </tr>
           </thead>
@@ -394,14 +444,29 @@ const formatCellValue = (value: any, column: Column) => {
               <tr
                 class="data-row"
                 :class="{
-                  draggable: rowDraggable,
-                  expanded: isExpanded(item.id),
+                  'expanded': isExpanded(item.id),
+                  'row-dragging': draggedRowId === item.id,
                 }"
-                draggable="true"
-                @dragstart="handleRowDragStart($event, item.id)"
                 @dragover="handleRowDragOver"
                 @drop="handleRowDrop($event, item.id)"
               >
+                <!-- 拖曳图标单元格 -->
+                <td
+                  v-if="rowDraggable"
+                  class="drag-handle-cell"
+                >
+                  <div
+                    class="drag-handle"
+                    draggable="true"
+                    @dragstart="handleRowDragStart($event, item.id)"
+                  >
+                    <VIcon
+                      icon="ri-drag-move-line"
+                      size="small"
+                    />
+                  </div>
+                </td>
+
                 <!-- 行號 -->
                 <td
                   v-if="rowNumberVisible"
@@ -417,7 +482,7 @@ const formatCellValue = (value: any, column: Column) => {
                   @click="toggleExpand(item.id)"
                 >
                   <VIcon
-                    :icon="isExpanded(item.id) ? 'ri-shut-down-line' : mdi-chevron-right'"
+                    :icon="isExpanded(item.id) ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"
                     size="small"
                   />
                 </td>
@@ -456,7 +521,7 @@ const formatCellValue = (value: any, column: Column) => {
                 class="expanded-row"
               >
                 <td
-                  :colspan="visibleColumns.length + (rowNumberVisible ? 1 : 0) + (expandable ? 1 : 0)"
+                  :colspan="visibleColumns.length + (rowNumberVisible ? 1 : 0) + (expandable ? 1 : 0) + (rowDraggable ? 1 : 0)"
                   class="expanded-content"
                 >
                   <slot
@@ -490,6 +555,9 @@ const formatCellValue = (value: any, column: Column) => {
 }
 
 .table-wrapper {
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 5%);
   inline-size: 100%;
   overflow-x: auto;
 }
@@ -503,7 +571,13 @@ const formatCellValue = (value: any, column: Column) => {
 
 .column-header {
   position: relative;
+  transition: background-color 0.2s ease;
   user-select: none;
+}
+
+.column-header.column-drag-over {
+  background-color: rgba(25, 118, 210, 10%);
+  box-shadow: inset 0 -2px 0 var(--v-theme-primary, #1976d2);
 }
 
 .column-header-content {
@@ -511,18 +585,75 @@ const formatCellValue = (value: any, column: Column) => {
   align-items: center;
 }
 
+.column-drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: grab;
+  margin-inline-end: 8px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.column-drag-handle:hover {
+  background-color: rgba(0, 0, 0, 5%);
+  opacity: 1;
+}
+
+.column-drag-handle:active {
+  background-color: rgba(0, 0, 0, 10%);
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.column-title {
+  flex: 1;
+}
+
 .resize-handle {
   position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: transparent;
   block-size: 100%;
   cursor: col-resize;
-  inline-size: 5px;
+  inline-size: 10px;
   inset-block-start: 0;
-  inset-inline-end: 0;
+  inset-inline-end: -5px;
+}
+
+.resize-handle-indicator {
+  border-radius: 1px;
+  background-color: rgba(0, 0, 0, 15%);
+  block-size: 60%;
+  inline-size: 2px;
 }
 
 .resize-handle:hover {
-  background-color: rgba(0, 0, 0, 10%);
+  background-color: rgba(0, 0, 0, 5%);
+}
+
+.resize-handle:hover .resize-handle-indicator {
+  background-color: rgba(0, 0, 0, 40%);
+  inline-size: 3px;
+}
+
+.resize-handle:active .resize-handle-indicator {
+  background-color: var(--v-theme-primary, #1976d2);
+  inline-size: 3px;
+}
+
+.resizing-active {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.resizing-active * {
+  cursor: col-resize !important;
 }
 
 .sortable {
@@ -544,9 +675,23 @@ const formatCellValue = (value: any, column: Column) => {
 .row-number,
 .row-number-header,
 .expand-cell,
-.expand-header {
+.expand-header,
+.drag-handle-cell,
+.drag-handle-header {
   inline-size: 50px;
   text-align: center;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  cursor: grab;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .data-cell.editable {
@@ -571,5 +716,49 @@ const formatCellValue = (value: any, column: Column) => {
 .expanded-field {
   padding-block: 4px;
   padding-inline: 0;
+}
+
+.row-dragging {
+  opacity: 0.6;
+  transition: transform 0.2s ease-in-out;
+}
+
+@keyframes row-move {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.data-row {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.data-row.row-dragging {
+  animation: row-move 0.3s ease-in-out;
+}
+
+/* 拖曳时突出显示目标元素 */
+.column-drag-over::before {
+  position: absolute;
+  border-inline-start: 2px solid var(--v-theme-primary, #1976d2);
+  content: '';
+  inset-block: 0;
+  inset-inline-start: 0;
+}
+
+/* 确保表格边框一致性 */
+.VTable {
+  border-collapse: separate;
+  border-spacing: 0;
+  inline-size: 100%;
 }
 </style>

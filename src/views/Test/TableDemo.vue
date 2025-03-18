@@ -1,7 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import EnhancedDataTable from '@/components/EnhancedDataTable.vue'
+import AdvanceDataTable from '@/components/AdvanceDataTable.vue'
 
+// EnhancedDataTable 的数据
 const headers = ref([
   { title: 'ID', key: 'id', sortable: true },
   { title: 'Project Name', key: 'name', sortable: true },
@@ -22,15 +24,80 @@ const items = ref([
   { id: 5, name: 'Project Epsilon', description: 'Description of Project Epsilon', status: 'Completed', createdAt: '2024-01-05', priority: 'Medium', budget: 60000, progress: 100, active: false },
 ])
 
+// AdvanceDataTable 的数据
+const advanceColumns = ref([
+  { title: 'ID', key: 'id', sortable: true, width: 80 },
+  { title: '项目名称', key: 'name', sortable: true, editable: true },
+  { title: '描述', key: 'description', sortable: false, editable: true },
+  { title: '状态', key: 'status', sortable: true, editable: true },
+  { title: '创建日期', key: 'createdAt', sortable: true },
+  { title: '优先级', key: 'priority', sortable: true, editable: true },
+  { title: '预算 (USD)', key: 'budget', sortable: true, editable: true },
+  { title: '进度 (%)', key: 'progress', sortable: true, editable: true },
+  { title: '活跃状态', key: 'active', sortable: true, editable: true },
+])
+
+const advanceItems = ref([...items.value])
+
 const loading = ref(false)
+
+// AdvanceDataTable 的事件处理
+const handleSort = (sortInfo: { key: string; direction: 'asc' | 'desc' }) => {
+  console.log('排序信息:', sortInfo)
+}
+
+const handleRowClick = (info: { rowId: number | string; key: string; value: any }) => {
+  console.log('行点击:', info)
+}
+
+const handleRowEdit = (info: { rowId: number | string; key: string; value: any; row: any }) => {
+  console.log('单元格编辑:', info)
+}
 </script>
 
 <template>
-  <div>
+  <div class="pa-4">
+    <h2 class="mb-4">
+      EnhancedDataTable 示例
+    </h2>
     <EnhancedDataTable
       v-model:headers="headers"
       v-model:items="items"
       :loading="loading"
     />
+
+    <h2 class="mb-4 mt-8">
+      AdvanceDataTable 示例
+    </h2>
+    <AdvanceDataTable
+      :columns="advanceColumns"
+      :items="advanceItems"
+      row-number-visible
+      row-draggable
+      column-draggable
+      column-resizable
+      sortable
+      expandable
+      editable-on-click
+      :dense
+      header-sticky
+      @sort="handleSort"
+      @row-click="handleRowClick"
+      @row-edit="handleRowEdit"
+    />
   </div>
 </template>
+
+<style scoped>
+.pa-4 {
+  padding: 1rem;
+}
+
+.mb-4 {
+  margin-block-end: 1rem;
+}
+
+.mt-8 {
+  margin-block-start: 2rem;
+}
+</style>
