@@ -29,6 +29,12 @@ export interface EqpOptionResponse {
   leadTime: string
 }
 
+export interface EqpCategoryResponse {
+  id: number
+  machineId: number
+  name: string
+}
+
 export interface PriceTableResponse {
   id: number
   machineId: number
@@ -90,6 +96,14 @@ const generateMockEqpOptions = (count: number, machineCount: number): EqpOptionR
   }))
 }
 
+const generateMockEqpCategories = (count: number, machineCount: number): EqpCategoryResponse[] => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    machineId: faker.number.int({ min: 1, max: machineCount }),
+    name: faker.commerce.department(),
+  }))
+}
+
 const generateMockPriceTableItems = (priceTableId: number, count: number): PriceTableItemResponse[] => {
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
@@ -131,6 +145,7 @@ const generateMockPriceTables = (machineCount: number): PriceTableResponse[] => 
 const mockMachines = generateMockMachines(1000)
 const mockEqpOptions = generateMockEqpOptions(1500, 1000)
 const mockPriceTables = generateMockPriceTables(1000)
+const mockEqpCategories = generateMockEqpCategories(10, 10)
 
 export { mockMachines, mockEqpOptions, mockPriceTables }
 
@@ -142,6 +157,7 @@ const machineService = {
 const eqpOptionService = {
   getEqpOptions: async () => mockEqpOptions,
   getEqpOptionById: async (id: number) => mockEqpOptions.find(option => option.id === id),
+  generateMockEqpCategories: async () => mockEqpCategories,
 }
 
 const priceTableService = {

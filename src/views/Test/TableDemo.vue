@@ -79,7 +79,6 @@ const handleRowEdit = (info: { rowId: number | string; key: string; value: any; 
       sortable
       expandable
       editable-on-click
-      :dense
       header-sticky
       @sort="handleSort"
       @row-click="handleRowClick"

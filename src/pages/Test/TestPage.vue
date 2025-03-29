@@ -5,6 +5,7 @@ import TestDeleteConfirm from '@/views/Test/TestDeleteConfirm.vue'
 // import TestDateInput from '@/views/Test/TestDateInput.vue'
 import TestFileUplaod from '@/views/Test/TestFileUplaod.vue'
 import TableDemo from '@/views/Test/TableDemo.vue'
+import TestComboBox from '@/views/Test/TestComboBox.vue'
 </script>
 
 <template>
@@ -20,6 +21,18 @@ import TableDemo from '@/views/Test/TableDemo.vue'
     </VCardItem>
     <VCardText>
       <TestDeleteConfirm @confirm-delete="() => console.log('123')" />
+    </VCardText>
+  </VCard>
+
+  <!-- 👉 test combo box -->
+  <VCard class="mt-4">
+    <VCardItem>
+      <VCardTitle>
+        Test ComboBox
+      </VCardTitle>
+    </VCardItem>
+    <VCardText>
+      <TestComboBox />
     </VCardText>
   </VCard>
 
