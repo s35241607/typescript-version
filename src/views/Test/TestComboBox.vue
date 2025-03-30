@@ -7,22 +7,26 @@ const editingItem = ref(null)
 
 const model = ref<number | null>(null)
 const search = ref<string | null>(null)
-const createOptionRef = ref<HTMLElement | null>(null)
+const comboboxRef = ref(null)
+const createOptionRef = ref(null)
 
 const { data, loading, fetch } = useApi()
 
 const addItem = async (name: any) => {
   try {
     const newItem = {
-      id: 999,
+      id: Math.max(...(data.value?.map((obj: any) => obj?.id) || [0])) + 1,
       name,
     }
 
     // TODO: 這邊要去呼叫 api 並把結果串回去
 
     data.value?.push(newItem)
-
     console.log('已新增', newItem)
+
+    // 新增完自動選擇，跟清除 search
+    model.value = newItem.id
+    console.log()
   }
   catch (error) {
     console.error('Error adding item:', error)
@@ -38,16 +42,21 @@ const handleModelValue = (any: any) => {
   console.log('handleModelValue', any)
 
   // 感覺可以在這邊檢查如果不是 Object 格式的話就清掉 search
-  // if (typeof (any) !== 'object')
-  //   model.value = null
+  if (typeof (any) !== 'number')
+    model.value = null
 }
 
 const handleFocued = (any: any) => {
-  // console.log('handleFocued', any)
+  console.log('handleFocued', comboboxRef.value)
 }
 
 const handleBlur = (any: any) => {
   console.log('handleBlur', any)
+}
+
+const handleInput = (any: any) => {
+  // console.log('handleInput', createOptionRef.value)
+  // console.log(createOptionRef.value)
 }
 
 watch(model, async (val, prev) => {
@@ -84,10 +93,12 @@ onMounted(async () => {
   <VContainer fluid>
     <!--
       TODO: 1. blur 的時候不要自動選取
-      TODO: 2. 選取資料的時候只要存 id，現在會抓整個 object
+      TODO: 2. 沒有匹配選項的時候自動對焦新增的那個項目
+      TODO: 3. 新增完後清掉多餘的 search
     -->
     model: {{ model }}
     <VCombobox
+      ref="comboboxRef"
       v-model="model"
       v-model:search="search"
       :items="data"
@@ -103,6 +114,7 @@ onMounted(async () => {
       @update:focused="handleFocued"
       @update:model-value="handleModelValue"
       @blur="handleBlur"
+      @input="handleInput"
     >
       <!-- 新增一個提示 -->
       <template #prepend-item>
@@ -148,5 +160,7 @@ onMounted(async () => {
 
       <!-- 顯示每條資訊 -->
     </VCombobox>
+
+    {{ data }}
   </VContainer>
 </template>
