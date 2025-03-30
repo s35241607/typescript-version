@@ -145,7 +145,7 @@ const generateMockPriceTables = (machineCount: number): PriceTableResponse[] => 
 const mockMachines = generateMockMachines(1000)
 const mockEqpOptions = generateMockEqpOptions(1500, 1000)
 const mockPriceTables = generateMockPriceTables(1000)
-const mockEqpCategories = generateMockEqpCategories(10, 10)
+const mockEqpCategories = generateMockEqpCategories(3, 3)
 
 export { mockMachines, mockEqpOptions, mockPriceTables }
 
