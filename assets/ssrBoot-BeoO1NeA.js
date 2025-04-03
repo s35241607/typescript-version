@@ -1,1 +1,0 @@
-import{x as s,i as t,y as e,s as n}from"./index-DeF3NdgD.js";function i(){const o=s(!1);return t(()=>{window.requestAnimationFrame(()=>{o.value=!0})}),{ssrBootStyles:e(()=>o.value?void 0:{transition:"none !important"}),isBooted:n(o)}}export{i as u};
