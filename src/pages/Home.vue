@@ -2,8 +2,63 @@
 import { computed, ref } from 'vue'
 import { useTheme } from 'vuetify'
 
+// --- Interfaces based on vue-vuetify.mdc rules ---
+interface Stat {
+  count: number
+  label: string
+  change: number
+  trend: 'up' | 'down'
+  icon: string
+  color: string // Could be refined further if colors are strictly from theme
+}
+
+interface VehicleStatus {
+  name: string
+  value: number
+  time: string
+  icon: string
+  color: string
+}
+
+interface VehicleOverview {
+  statusBreakdown: VehicleStatus[]
+}
+
+interface ShipmentDataPoint {
+  day: string
+  shipment: number
+  delivery: number
+}
+
+interface DeliveryMetric {
+  label: string
+  value: string // Consider number if appropriate for calculations
+  change: number
+  trend: 'up' | 'down'
+  icon: string
+  color: string
+}
+
+interface ExceptionType {
+  name: string
+  color: string // Keep as string for hex codes
+}
+
+interface Address {
+  name: string
+  address: string
+}
+
+interface Order {
+  status: string // Could be a specific union type like 'New' | 'Preparing' | 'Shipping'
+  sender: Address
+  receiver: Address
+}
+
+// --- End Interfaces ---
+
 // Stats for top cards
-const stats = ref([
+const stats = ref<Stat[]>([
   {
     count: 42,
     label: 'On route vehicles',
@@ -39,7 +94,7 @@ const stats = ref([
 ])
 
 // Vehicles overview data
-const vehiclesOverview = ref({
+const vehiclesOverview = ref<VehicleOverview>({
   statusBreakdown: [
     { name: 'On the way', value: 39.7, time: '2hr 10min', icon: 'ri-truck-line', color: 'grey-darken-3' },
     { name: 'Unloading', value: 28.3, time: '3hr 15min', icon: 'ri-inbox-unarchive-line', color: 'purple' },
@@ -50,9 +105,9 @@ const vehiclesOverview = ref({
 
 // Shipment statistics data
 const months = ref(['January', 'February', 'March', 'April', 'May', 'June'])
-const selectedMonth = ref('January')
+const selectedMonth = ref<string>('January')
 
-const shipmentData = ref([
+const shipmentData = ref<ShipmentDataPoint[]>([
   { day: '1 Jan', shipment: 25, delivery: 22 },
   { day: '2 Jan', shipment: 38, delivery: 30 },
   { day: '3 Jan', shipment: 22, delivery: 18 },
@@ -65,12 +120,12 @@ const shipmentData = ref([
   { day: '10 Jan', shipment: 32, delivery: 29 },
 ])
 
-const totalDeliveries = computed(() => {
+const totalDeliveries = computed<string>(() => {
   return '23.8k'
 })
 
 // Delivery performance metrics
-const deliveryMetrics = ref([
+const deliveryMetrics = ref<DeliveryMetric[]>([
   {
     label: 'Packages in transit',
     value: '10k',
@@ -122,17 +177,17 @@ const deliveryMetrics = ref([
 ])
 
 // Delivery exceptions data
-const exceptionTypes = ref([
+const exceptionTypes = ref<ExceptionType[]>([
   { name: 'Incorrect address', color: '#4CAF50' },
   { name: 'Weather conditions', color: '#8BC34A' },
   { name: 'Federal Holidays', color: '#4CAF50' },
   { name: 'Damage during transit', color: '#8BC34A' },
 ])
 
-const exceptionsPercentage = ref(30)
+const exceptionsPercentage = ref<number>(30)
 
 // Orders by countries
-const orders = ref([
+const orders = ref<Order[]>([
   {
     status: 'New',
     sender: {
@@ -158,7 +213,7 @@ const orders = ref([
 ])
 
 // Tabs state for orders
-const tab = ref('New')
+const tab = ref<string>('New')
 
 const theme = useTheme()
 
@@ -635,11 +690,6 @@ theme.global.name.value = 'dark'
 .v-card {
   border-radius: 8px;
   border: none;
-}
-
-.card-background {
-  /* Example: background-color: rgb(var(--v-theme-surface-variant)); */
-  /* If default surface is fine, you might not need this class */
 }
 
 .month-select :deep(.v-field__outline) {

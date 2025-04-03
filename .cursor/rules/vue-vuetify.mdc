@@ -1,0 +1,38 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+### **Code Style and Structure**  
+- **撰寫簡潔、可維護、技術正確的 TypeScript 代碼**，並提供相關示例。  
+- **使用函數式和聲明式程式設計模式**，避免使用 `class`。  
+- **優先考慮模組化和可重複使用**，遵循 DRY 原則，避免重複代碼。  
+- **使用描述性變數名稱**，例如 `isLoading`、`hasError`，來提高可讀性。  
+- **系統性地組織檔案**：每個檔案只包含相關內容，如匯出的元件、子元件、輔助函數、靜態內容和類型定義。  
+
+---
+
+### **命名規範**  
+- **目錄使用小寫加連字符**（例如 `components/auth-wizard`）。  
+- **函數優先使用具名匯出**，而非 `default export`。  
+
+---
+
+### **TypeScript 使用規範**  
+- **所有代碼都使用 TypeScript**，並且優先使用 **interface** 而非 `type`，因為 `interface` 更具可擴展性，且可自動合併。  
+- **避免使用 `enum`，改用物件映射 (`Record<K, V>`) 來提升型別安全性和靈活度**。  
+- **Vue 組件應使用 `script setup` 和函數式元件**，保持代碼簡潔。  
+
+---
+
+### **語法與格式**  
+- **純函數（Pure Function）使用 `function` 關鍵字**，利用 hoisting 優勢並提升可讀性。  
+- **Vue 組件統一使用 Composition API 的 `script setup`**，避免 Options API。  
+
+---
+
+### **UI 和樣式（使用 Vuetify）**  
+- **使用 Vuetify 作為 UI 組件庫**，確保一致的 UI 風格和可用性。  
+- **使用 Vuetify 的 Grid System 和內建的響應式類別來處理版面配置**。  
+- **遵循 Material Design 指南，確保良好的 UX 和可訪問性**。  
+- **針對移動裝置優化設計**，採用 Mobile-First 方法。  

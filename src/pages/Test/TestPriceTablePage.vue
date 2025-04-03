@@ -1,26 +1,38 @@
 <!-- Start of Selection -->
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
+import type { VDataTableServer } from 'vuetify/components/VDataTable'
 import { priceTableService } from '@/api/services/mockService'
 import type { PriceTableResponse } from '@/api/services/mockService'
 import { formatDate } from '@/utils/date'
+import { useApi } from '@/composables/useApi'
 
-const items = ref<any[]>()
+type ReadonlyHeaders = VDataTableServer['headers']
 
-const headers: any = [
-  { title: 'Order Number', key: 'orderNumber' },
-  { title: 'Machine ID', key: 'machineId' },
-  { title: 'Currency', key: 'currency' },
-  { title: 'Contract Start Date', key: 'contractStartDate' },
-  { title: 'Contract End Date', key: 'contractEndDate' },
+const headers: ReadonlyHeaders = [
+  { title: 'Order Number', key: 'orderNumber', sortable: false },
+  { title: 'Machine ID', key: 'machineId', sortable: false },
+  { title: 'Currency', key: 'currency', sortable: false },
+  { title: 'Contract Start Date', key: 'contractStartDate', sortable: false },
+  { title: 'Contract End Date', key: 'contractEndDate', sortable: false },
 ]
 
-const priceTableList = ref<PriceTableResponse[]>()
+const {
+  data: priceTableList,
+  loading,
+  error,
+  execute: fetchPriceTables,
+} = useApi<PriceTableResponse[]>(
+  priceTableService.getPriceTables,
+  { initialData: [] },
+)
 
-onMounted(async () => {
-  priceTableList.value = await priceTableService.getPriceTables()
+const items = computed(() => {
+  return priceTableList.value?.map(m => ({ title: m.orderNumber, value: m.id })) ?? []
+})
 
-  items.value = priceTableList.value.map(m => ({ title: m.orderNumber, value: m.id }))
+onMounted(() => {
+  fetchPriceTables()
 })
 </script>
 
@@ -32,15 +44,42 @@ onMounted(async () => {
     <VCardText>
       <VRow>
         <VCol cols="12">
-          <VAutocomplete :items="items" />
+          <VAutocomplete
+            :items="items"
+            :loading="loading"
+            label="Select Order Number"
+            item-title="title"
+            item-value="value"
+            clearable
+          />
         </VCol>
       </VRow>
     </VCardText>
     <VDivider />
     <VDataTable
       :headers="headers"
-      :items="priceTableList"
+      :items="priceTableList ?? []"
+      :loading="loading"
+      item-value="id"
     >
+      <template #loading>
+        <VSkeletonLoader type="table-row@5" />
+      </template>
+      <template #no-data>
+        <div
+          v-if="error"
+          class="text-center pa-4 text-error"
+        >
+          Error loading data: {{ error }}
+        </div>
+        <div
+          v-else
+          class="text-center pa-4"
+        >
+          No data available.
+        </div>
+      </template>
+
       <template #item.orderNumber="{ item }">
         <RouterLink
           :to="{ name: 'TestPriceTableDetail', params: { id: item.id } }"

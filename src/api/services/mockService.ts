@@ -149,20 +149,53 @@ const mockEqpCategories = generateMockEqpCategories(3, 3)
 
 export { mockMachines, mockEqpOptions, mockPriceTables }
 
+// --- Helper function for delay ---
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const MOCK_DELAY_MS = 2000 // Set delay duration (e.g., 500ms)
+
+// --- Updated Services with Delay ---
 const machineService = {
-  getMachines: async () => mockMachines,
-  getMachineById: async (id: number) => mockMachines.find(machine => machine.id === id),
+  getMachines: async () => {
+    await delay(MOCK_DELAY_MS)
+
+    return mockMachines
+  },
+  getMachineById: async (id: number) => {
+    await delay(MOCK_DELAY_MS)
+
+    return mockMachines.find(machine => machine.id === id)
+  },
 }
 
 const eqpOptionService = {
-  getEqpOptions: async () => mockEqpOptions,
-  getEqpOptionById: async (id: number) => mockEqpOptions.find(option => option.id === id),
-  generateMockEqpCategories: async () => mockEqpCategories,
+  getEqpOptions: async () => {
+    await delay(MOCK_DELAY_MS)
+
+    return mockEqpOptions
+  },
+  getEqpOptionById: async (id: number) => {
+    await delay(MOCK_DELAY_MS)
+
+    return mockEqpOptions.find(option => option.id === id)
+  },
+  generateMockEqpCategories: async () => {
+    await delay(MOCK_DELAY_MS)
+
+    return mockEqpCategories
+  },
 }
 
 const priceTableService = {
-  getPriceTables: async () => mockPriceTables,
-  getPriceTableById: async (id: number) => mockPriceTables.find(priceTable => priceTable.id === id),
+  getPriceTables: async () => {
+    await delay(MOCK_DELAY_MS)
+
+    return mockPriceTables
+  },
+  getPriceTableById: async (id: number) => {
+    await delay(MOCK_DELAY_MS)
+
+    return mockPriceTables.find(priceTable => priceTable.id === id)
+  },
 }
 
 export { machineService, eqpOptionService, priceTableService }

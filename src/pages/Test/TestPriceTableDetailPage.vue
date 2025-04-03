@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 // import { VDateInput } from 'vuetify/labs/components'
+import type { VDataTableServer } from 'vuetify/components/VDataTable'
 import type { EqpOptionResponse, MachineResponse, PriceTableResponse } from '@/api/services/mockService'
 import { eqpOptionService, machineService, priceTableService } from '@/api/services/mockService'
 import FileUploader from '@/components/FileUploader.vue'
+import { useApi } from '@/composables/useApi'
 
 // 初始化 priceTable 時確保是空對象
 const priceTable = ref<PriceTableResponse>({} as PriceTableResponse)
 const machine = ref<MachineResponse | undefined>({} as MachineResponse)
-const eqpOptions = ref<EqpOptionResponse[]>()
-const eqpOptionMap: any = ref()
 
 // 附件相關
 const attachments = ref<any[]>([])
@@ -45,7 +45,7 @@ const dateRules = [
   },
 ]
 
-const priceTableItemHeaders = ref([
+const priceTableItemHeaders = ref<VDataTableServer['headers']>([
   // { title: '', key: 'actions' },
   { title: '', key: 'data-table-group' }, // 加上這個 key 來啟用展開功能
   { title: '#', key: 'sequence' },
@@ -83,61 +83,82 @@ const deleteRow = (item: any) => {
   priceTable.value.items = priceTable.value.items.filter(i => i.id !== item.id)
 }
 
-const computedPriceTableItems = computed(() => {
-  // 確保 priceTable.value?.items 存在，否則回傳空陣列
-  return (priceTable.value?.items || []).map(item => {
-    // 確保 eqpOptionMap.value 存在，避免讀取 undefined 屬性
-    const eqpOption = item.eqpOptionId ? eqpOptionMap.value?.[item.eqpOptionId] ?? {} : {}
+const route = useRoute()
+const priceTableId = Number(route.params.id)
 
-    return {
-      ...item, // 保留原始 `priceTableItems` 的結構
-      eqpOption,
-    }
-  })
-})
+// --- useApi for Price Table Detail ---
+const {
+  data: priceTableData, // Use priceTable directly
+  loading: loadingPriceTable,
+  error: errorPriceTable,
+  execute: fetchPriceTable,
+} = useApi<PriceTableResponse | undefined>( // Expect PriceTableResponse or undefined
+  () => priceTableService.getPriceTableById(priceTableId), // Wrap the call in a function
+  {
+    // Initialize with an empty object structure might be safer for template access
+    initialData: undefined, // Or {} as PriceTableResponse but need careful handling
+  },
+)
 
-onBeforeMount(async () => {
-  const route = useRoute()
-  const id = route.params.id
-  const response = await priceTableService.getPriceTableById(Number(id))
-  if (response)
-    priceTable.value = response
+// --- useApi for EQP Options ---
+const {
+  data: eqpOptionsData, // Use eqpOptions directly
+  loading: loadingEqpOptions,
+  error: errorEqpOptions,
+  execute: fetchEqpOptions,
+} = useApi<EqpOptionResponse[]>( // Expect EqpOptionResponse array
+  eqpOptionService.getEqpOptions,
+  { initialData: [] }, // Start with empty array
+)
 
-  console.log(priceTable.value)
+// --- State for Machine Data (Fetched manually after price table) ---
+const loadingMachine = ref(false)
+const errorMachine = ref<unknown | null>(null)
 
-  machine.value = await machineService.getMachineById(Number(priceTable.value?.machineId))
-  console.log(machine.value)
-
-  eqpOptions.value = await eqpOptionService.getEqpOptions()
-
-  // 轉換成 { eqpOptionId: eqpOption } 的快取映射
-  eqpOptionMap.value = eqpOptions.value.reduce((map: any, option) => {
+// --- EQP Option Map (Computed) ---
+const eqpOptionMapComputed = computed(() => {
+  return (eqpOptionsData.value ?? []).reduce((map: Record<number, EqpOptionResponse>, option) => {
     map[option.id] = option
 
     return map
   }, {})
+})
 
-  // 加載附件數據
-  if (priceTable.value.id) {
+// --- Computed Price Table Items (Uses priceTable and eqpOptionMap) ---
+const computedPriceTableItemsComputed = computed(() => {
+  return (priceTableData.value?.items ?? []).map(item => ({
+    ...item,
+    eqpOption: eqpOptionMapComputed.value[item.eqpOptionId] ?? {},
+  }))
+})
+
+// --- Watch for priceTable data to fetch machine data ---
+watch(priceTableData, async newPriceTable => {
+  if (newPriceTable?.machineId) {
+    loadingMachine.value = true
+    errorMachine.value = null
     try {
-      // 這裡應該調用實際的API來獲取附件列表
-      // 模擬從後端獲取附件數據
-      const mockAttachments: Array<{
-        id: string
-        name: string
-        size: number
-        type: string
-        url: string
-      }> = [
-        // 這裡可以添加模擬數據，實際應該從API獲取
-      ]
-
-      attachments.value = mockAttachments
+      machine.value = await machineService.getMachineById(newPriceTable.machineId)
     }
-    catch (error) {
-      console.error('獲取附件失敗', error)
+    catch (err) {
+      console.error('Failed to fetch machine data:', err)
+      errorMachine.value = err
+    }
+    finally {
+      loadingMachine.value = false
     }
   }
+  else {
+    // Reset machine data if priceTable is invalid or lacks machineId
+    machine.value = undefined
+  }
+}, { immediate: false }) // Don't run immediately, wait for fetchPriceTable result
+
+// --- Fetch initial data ---
+onBeforeMount(() => {
+  fetchPriceTable() // Fetch price table details
+  fetchEqpOptions() // Fetch EQP options
+  // Machine data will be fetched via the watch effect
 })
 
 onMounted(() => {
@@ -148,395 +169,438 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
-    <VCardText>
-      <!-- 左側資訊 -->
-      <div class="d-flex gap-2 align-center mb-2 flex-wrap">
-        <h5 class="text-h5">
-          {{ priceTable?.orderNumber }}
-        </h5>
-        <!-- 狀態 Chips -->
-        <div class="d-flex gap-2">
-          <VChip
-            color="warning"
-            variant="tonal"
-            size="small"
-          >
-            {{ priceTable?.status }}
-          </VChip>
-          <VChip
-            color="info"
-            variant="tonal"
-            size="small"
-          >
-            {{ priceTable?.currency }}
-          </VChip>
-        </div>
-        <VSpacer />
-        <VBtn size="small">
-          Submit
-        </VBtn>
-        <!-- 刪除按鈕 -->
-        <VBtn
-          color="error"
-          variant="outlined"
-          size="small"
-        >
-          Delete
-        </VBtn>
-      </div>
-      <VRow>
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <div>
-            Created By
-          </div>
-          <span class="text-high-emphasis font-weight-medium">{{ priceTable?.createdBy }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <div>
-            Created At
-          </div>
-          <span class="text-high-emphasis font-weight-medium">{{ priceTable?.createdAt?.toLocaleDateString('en-US', {
-            weekday: 'short', // 顯示星期幾
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false, // 12小時制 (AM/PM)
-          }) }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <div>
-            Last Updated By
-          </div>
-          <span class="text-high-emphasis font-weight-medium">{{ priceTable?.updatedBy }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <div>
-            Last Updated At
-          </div>
-          <span class="text-high-emphasis font-weight-medium"> {{ priceTable?.updatedAt?.toLocaleDateString('en-US', {
-            weekday: 'short', // 顯示星期幾
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false, // 12小時制 (AM/PM)
-          }) }}</span>
-        </VCol>
-      </VRow>
-    </VCardText>
-  </VCard>
-
-  <!-- Machine Information Section -->
-  <VCard
-    v-if="machine"
-    class="mb-6"
+  <!-- Loading/Error State for Price Table -->
+  <VProgressLinear
+    v-if="loadingPriceTable"
+    indeterminate
+    color="primary"
+  />
+  <VAlert
+    v-if="errorPriceTable"
+    type="error"
+    class="mb-4"
   >
-    <VCardItem>
-      <VCardTitle>
-        Machine Information
-      </VCardTitle>
-    </VCardItem>
-    <VCardText>
-      <VRow>
-        <!-- Displaying Machine Information -->
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Maker</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.maker }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Model Name</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.modelName }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Process</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.process }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Location</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.location }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Status</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.status }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Serial Number</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.serialNumber }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Installation Date</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.installationDate }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Last Maintenance</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.lastMaintenance }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Warranty Period</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.warrantyPeriod }}</span>
-        </VCol>
-        <VCol
-          cols="12"
-          lg="3"
-          md="3"
-          sm="4"
-        >
-          <div>Production Capacity</div>
-          <span class="text-high-emphasis font-weight-medium">{{ machine?.productionCapacity }}</span>
-        </VCol>
-      </VRow>
-    </VCardText>
-  </VCard>
+    Failed to load Price Table details: {{ errorPriceTable }}
+  </VAlert>
 
-  <!-- Price Table Information -->
-  <VCard
-    v-if="priceTable"
-    class="mb-6"
-  >
-    <VCardItem>
-      <VCardTitle class="d-flex">
-        <span>Price Table Information</span>
-        <VSpacer />
-        <VBtn size="small">
-          Save
-        </VBtn>
-      </VCardTitle>
-    </VCardItem>
-    <VCardText>
-      <VRow>
-        <!-- 使用 TextField 來呈現 Currency -->
-        <VCol
-          cols="12"
-          md="3"
-          sm="6"
-        >
-          <label>Currency</label>
-          <VTextField v-model="priceTable.currency" />
-        </VCol>
-        <!-- 使用 AutoComplete 來呈現 Owner -->
-        <VCol
-          cols="12"
-          md="3"
-          sm="6"
-        >
-          <label>Owner</label>
-          <VTextField v-model="priceTable.ownerId as number" />
-        </VCol>
-
-        <!-- 使用 VDateInput 來呈現 Contract Start Date -->
-        <VCol
-          cols="
-            12"
-          md="3"
-          sm="6"
-        >
-          <label>Contract Start Date</label>
-          <VTextField
-            v-model="priceTable.contractStartDate as Date"
-            :rules="dateRules"
-          />
-        </VCol>
-
-        <!-- 使用 VDateInput 來呈現 Contract End Date -->
-        <VCol
-          cols="12"
-          md="3"
-          sm="6"
-        >
-          <label>Contract End Date</label>
-          <VTextField
-            v-model="priceTable.contractEndDate as Date"
-            :rules="dateRules"
-          />
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol
-          cols="12"
-          md="6"
-        >
-          <label>Remark</label>
-          <VTextField v-model="priceTable.remark" />
-        </VCol>
-        <VCol
-          cols="12"
-          md="6"
-        >
-          <label>Attachment</label>
-          <div class="attachment-field">
-            <FileUploader
-              :initial-attachments="attachments"
-              :related-id="priceTable.id"
-              related-type="price-table"
-              upload-url="/api/attachments/upload"
-              delete-url="/api/attachments/delete"
-              @update:attachments="handleAttachmentsUpdate"
-              @upload-success="handleUploadSuccess"
-              @upload-error="handleUploadError"
-            />
+  <template v-if="priceTableData">
+    <VCard class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+      <VCardText>
+        <!-- 左側資訊 -->
+        <div class="d-flex gap-2 align-center mb-2 flex-wrap">
+          <h5 class="text-h5">
+            {{ priceTableData?.orderNumber ?? 'Loading...' }}
+          </h5>
+          <!-- 狀態 Chips -->
+          <div class="d-flex gap-2">
+            <VChip
+              v-if="priceTableData?.status"
+              color="warning"
+              variant="tonal"
+              size="small"
+            >
+              {{ priceTableData.status }}
+            </VChip>
+            <VChip
+              v-if="priceTableData?.currency"
+              color="info"
+              variant="tonal"
+              size="small"
+            >
+              {{ priceTableData.currency }}
+            </VChip>
           </div>
-        </VCol>
-      </VRow>
-    </VCardText>
-    <VCardItem>
-      <VCardTitle>Price Table Items</VCardTitle>
-    </VCardItem>
-    <VCardText class="d-flex gap-2">
-      <VBtn>Choose P/N</VBtn>
-      <VBtn @click="editMode = !editMode">
-        Edit
-      </VBtn>
-    </VCardText>
-    <VCardText>
-      <VDataTableVirtual
-        v-model:expanded="expanded"
-        :headers="priceTableItemHeaders"
-        :items="computedPriceTableItems"
-        show-expand
-        :group-by="[{ key: 'eqpOption.category', order: 'asc' }]"
-        item-grouping
-        height="60vh"
-        fixed-header
-        @click:row.stop="expandRow"
-      >
-        <!-- 編輯按鈕 -->
-
-        <template #item.data-table-group="{ item }">
+          <VSpacer />
+          <VBtn size="small">
+            Submit
+          </VBtn>
+          <!-- 刪除按鈕 -->
           <VBtn
-            size="small"
-            variant="text"
             color="error"
-            icon="ri-delete-bin-line"
-            @click="deleteRow(item)"
-          />
-        </template>
-        <template #item.sequence=" item ">
-          {{ item.index }}
-        </template>
-        <template #item.eqpOption.description="{ item }">
-          {{ item.eqpOption.description }}
-        </template>
-        <!-- 自定義分組標題 -->
-        <!--
-          <template #data-table-group="{ item }">
-          <tr>
-          <td
-          colspan="8"
-          class="group-header"
+            variant="outlined"
+            size="small"
           >
-          <strong>{{ item.value }}</strong>
-          </td>
-          </tr>
+            Delete
+          </VBtn>
+        </div>
+        <VRow>
+          <VCol
+            cols="12"
+            sm="3"
+          >
+            <div>
+              Created By
+            </div>
+            <span class="text-high-emphasis font-weight-medium">{{ priceTableData?.createdBy ?? '...' }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            sm="3"
+          >
+            <div>
+              Created At
+            </div>
+            <span class="text-high-emphasis font-weight-medium">
+              {{ priceTableData?.createdAt ? new Date(priceTableData.createdAt).toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : '...' }}
+            </span>
+          </VCol>
+          <VCol
+            cols="12"
+            sm="3"
+          >
+            <div>
+              Last Updated By
+            </div>
+            <span class="text-high-emphasis font-weight-medium">{{ priceTableData?.updatedBy ?? '...' }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            sm="3"
+          >
+            <div>
+              Last Updated At
+            </div>
+            <span class="text-high-emphasis font-weight-medium">
+              {{ priceTableData?.updatedAt ? new Date(priceTableData.updatedAt).toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : '...' }}
+            </span>
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+
+    <!-- Machine Information Section -->
+    <VProgressLinear
+      v-if="loadingMachine"
+      indeterminate
+      color="secondary"
+      class="mb-6"
+    />
+    <VAlert
+      v-else-if="errorMachine"
+      type="error"
+      class="mb-6"
+    >
+      Failed to load Machine details: {{ errorMachine }}
+    </VAlert>
+    <VCard
+      v-else-if="machine"
+      class="mb-6"
+    >
+      <VCardItem>
+        <VCardTitle>
+          Machine Information
+        </VCardTitle>
+      </VCardItem>
+      <VCardText>
+        <VRow>
+          <!-- Displaying Machine Information -->
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Maker</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.maker }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Model Name</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.modelName }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Process</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.process }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Location</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.location }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Status</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.status }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Serial Number</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.serialNumber }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Installation Date</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.installationDate }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Last Maintenance</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.lastMaintenance }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Warranty Period</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.warrantyPeriod }}</span>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="3"
+            md="3"
+            sm="4"
+          >
+            <div>Production Capacity</div>
+            <span class="text-high-emphasis font-weight-medium">{{ machine?.productionCapacity }}</span>
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+
+    <!-- Price Table Information -->
+    <VCard
+      v-if="priceTableData"
+      class="mb-6"
+    >
+      <VCardItem>
+        <VCardTitle class="d-flex">
+          <span>Price Table Information</span>
+          <VSpacer />
+          <VBtn size="small">
+            Save
+          </VBtn>
+        </VCardTitle>
+      </VCardItem>
+      <VCardText>
+        <VRow>
+          <!-- 使用 TextField 來呈現 Currency -->
+          <VCol
+            cols="12"
+            md="3"
+            sm="6"
+          >
+            <label>Currency</label>
+            <VTextField
+              v-model="priceTableData.currency"
+              :disabled="!priceTableData"
+            />
+          </VCol>
+          <!-- 使用 AutoComplete 來呈現 Owner -->
+          <VCol
+            cols="12"
+            md="3"
+            sm="6"
+          >
+            <label>Owner</label>
+            <VTextField
+              v-model.number="priceTableData.ownerId"
+              :disabled="!priceTableData"
+              type="number"
+            />
+          </VCol>
+
+          <!-- 使用 VDateInput 來呈現 Contract Start Date -->
+          <VCol
+            cols="
+              12"
+            md="3"
+            sm="6"
+          >
+            <label>Contract Start Date</label>
+            <VTextField
+              v-model="priceTableData.contractStartDate"
+              :rules="dateRules"
+              :disabled="!priceTableData"
+              type="date"
+            />
+          </VCol>
+
+          <!-- 使用 VDateInput 來呈現 Contract End Date -->
+          <VCol
+            cols="12"
+            md="3"
+            sm="6"
+          >
+            <label>Contract End Date</label>
+            <VTextField
+              v-model="priceTableData.contractEndDate"
+              :rules="dateRules"
+              :disabled="!priceTableData"
+              type="date"
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol
+            cols="12"
+            md="6"
+          >
+            <label>Remark</label>
+            <VTextField
+              v-model="priceTableData.remark"
+              :disabled="!priceTableData"
+            />
+          </VCol>
+          <VCol
+            cols="12"
+            md="6"
+          >
+            <label>Attachment</label>
+            <div class="attachment-field">
+              <FileUploader
+                :initial-attachments="attachments"
+                :related-id="priceTableData.id"
+                :disabled="!priceTableData"
+                related-type="price-table"
+                upload-url="/api/attachments/upload"
+                delete-url="/api/attachments/delete"
+                @update:attachments="handleAttachmentsUpdate"
+                @upload-success="handleUploadSuccess"
+                @upload-error="handleUploadError"
+              />
+            </div>
+          </VCol>
+        </VRow>
+      </VCardText>
+      <VCardItem>
+        <VCardTitle>Price Table Items</VCardTitle>
+      </VCardItem>
+      <VCardText class="d-flex gap-2">
+        <VBtn :disabled="loadingEqpOptions">
+          Choose P/N
+        </VBtn>
+        <VBtn @click="editMode = !editMode">
+          {{ editMode ? 'Done' : 'Edit' }}
+        </VBtn>
+      </VCardText>
+      <VCardText>
+        <!-- Loading/Error for EQP Options affects the table -->
+        <VProgressLinear
+          v-if="loadingEqpOptions"
+          indeterminate
+          color="info"
+        />
+        <VAlert
+          v-else-if="errorEqpOptions"
+          type="error"
+          class="mb-4"
+        >
+          Failed to load EQP Options: {{ errorEqpOptions }}
+        </VAlert>
+        <VDataTableVirtual
+          v-else
+          v-model:expanded="expanded"
+          :headers="priceTableItemHeaders"
+          :items="computedPriceTableItemsComputed"
+          show-expand
+          :group-by="[{ key: 'eqpOption.category', order: 'asc' }]"
+          height="60vh"
+          fixed-header
+          item-value="id"
+          @click:row="expandRow"
+        >
+          <template #item.data-table-group="{ item }">
+            <VBtn
+              size="x-small"
+              variant="text"
+              color="error"
+              icon="ri-delete-bin-line"
+              @click.stop="deleteRow(item)"
+            />
           </template>
-        -->
-        <!-- 摺疊內容 -->
-        <template #expanded-row="{ item }">
-          <tr>
-            <td colspan="8">
-              <strong>Supplement:</strong> {{ item.eqpOption?.supplement || 'N/A' }}
-            </td>
-          </tr>
-        </template>
-        <template #item.savingBase="{ item }">
-          <template v-if="editMode">
-            <input
-              v-model="item.savingBase"
-              type="text"
-              class="editable-input"
-              placeholder="請輸入保存基準"
-              style=" padding: 5px;border: 1px solid #007bff; border-radius: 4px; inline-size: 100%; text-align: end;"
-            >
+          <template #item.sequence="{ index }">
+            {{ index + 1 }}
           </template>
-          <template v-else>
-            {{ item.savingBase }}
+          <template #item.eqpOption.description="{ item }">
+            {{ item.eqpOption.description }}
           </template>
-        </template>
-        <template #item.listPrice="{ item }">
-          <template v-if="editMode">
-            <input
-              v-model="item.listPrice"
-              type="text"
-            >
+          <template #expanded-row="{ columns, item }">
+            <tr>
+              <td :colspan="columns.length">
+                <strong>Supplement:</strong> {{ item.eqpOption?.supplement || 'N/A' }}
+              </td>
+            </tr>
           </template>
-          <template v-else>
-            {{ item.listPrice }}
+          <template #item.savingBase="{ item }">
+            <VTextField
+              v-if="editMode"
+              v-model.number="item.savingBase"
+              type="number"
+              density="compact"
+              hide-details
+              variant="underlined"
+              class="editable-input text-right"
+            />
+            <span
+              v-else
+              class="d-block text-right"
+            >{{ item.savingBase }}</span>
           </template>
-        </template>
-        <template #item.referencePrice="{ item }">
-          <template v-if="editMode">
-            <input
-              v-model="item.referencePrice"
-              type="text"
-            >
+          <template #item.listPrice="{ item }">
+            <VTextField
+              v-if="editMode"
+              v-model.number="item.listPrice"
+              type="number"
+              density="compact"
+              hide-details
+              variant="underlined"
+              class="editable-input text-right"
+            />
+            <span
+              v-else
+              class="d-block text-right"
+            >{{ item.listPrice }}</span>
           </template>
-          <template v-else>
-            {{ item.referencePrice }}
+          <template #item.referencePrice="{ item }">
+            <VTextField
+              v-if="editMode"
+              v-model.number="item.referencePrice"
+              type="number"
+              density="compact"
+              hide-details
+              variant="underlined"
+              class="editable-input text-right"
+            />
+            <span
+              v-else
+              class="d-block text-right"
+            >{{ item.referencePrice }}</span>
           </template>
-        </template>
-      </VDataTableVirtual>
-    </VCardText>
-  </VCard>
+        </VDataTableVirtual>
+      </VCardText>
+    </VCard>
+  </template>
 </template>
 
 <style scoped>
@@ -551,5 +615,18 @@ onMounted(() => {
 
 .v-table {
   white-space: nowrap;
+}
+
+.editable-input {
+  /* padding: 5px; */
+  /* border: 1px solid #007bff; */
+  /* border-radius: 4px; */
+  /* inline-size: 100%; */
+  text-align: end;
+}
+
+/* Ensure the input text is aligned right within the text field */
+.editable-input :deep(input) {
+  text-align: right;
 }
 </style>
