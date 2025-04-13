@@ -74,6 +74,13 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
         to: '/test/price-table',
       }"
     />
+    <VerticalNavLink
+      :item="{
+        title: 'RFQ Template Download',
+        to: '/test/rfq-download', // Match the route path
+        icon: 'ri-download-cloud-2-line', // Added an icon
+      }"
+    />
   </VerticalNavGroup>
 
   <VerticalNavLink

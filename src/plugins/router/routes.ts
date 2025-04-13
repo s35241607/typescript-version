@@ -59,6 +59,15 @@ export const routes = [
         meta: { breadcrumb: 'Detail' },
       },
       {
+        path: 'test/rfq-download',
+        name: 'TestRfqDownload',
+        component: () => import('@/pages/Test/TestRfqDownloadPage.vue'),
+        meta: {
+          breadcrumb: 'RFQ Download',
+          requiresAuth: true,
+        },
+      },
+      {
         path: 'icons',
         name: 'Icons',
         component: () => import('@/pages/icons.vue'),

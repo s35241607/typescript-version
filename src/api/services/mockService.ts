@@ -151,7 +151,7 @@ export { mockMachines, mockEqpOptions, mockPriceTables }
 
 // --- Helper function for delay ---
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-const MOCK_DELAY_MS = 2000 // Set delay duration (e.g., 500ms)
+const MOCK_DELAY_MS = 500 // Set delay duration (e.g., 500ms)
 
 // --- Updated Services with Delay ---
 const machineService = {
