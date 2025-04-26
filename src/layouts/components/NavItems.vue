@@ -54,6 +54,16 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 
+  <!-- New NavLink for Price Review Dashboard -->
+  <VerticalNavLink
+    :item="{
+      title: 'Price Review',
+      icon: 'ri-file-list-2-line', // Example icon
+      to: '/price-review-dashboard', // Matches the route path
+    }"
+  />
+  <!-- End of New NavLink -->
+
   <VerticalNavGroup
     :item="{
       title: 'Test Pages',

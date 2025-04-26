@@ -68,6 +68,12 @@ export const routes = [
         },
       },
       {
+        path: 'price-review-dashboard',
+        name: 'PriceReviewDashboard',
+        component: () => import('@/pages/PriceReviewDashboard.vue'),
+        meta: { breadcrumb: 'Price Review Dashboard' },
+      },
+      {
         path: 'icons',
         name: 'Icons',
         component: () => import('@/pages/icons.vue'),
