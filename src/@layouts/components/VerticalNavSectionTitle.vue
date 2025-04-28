@@ -18,3 +18,13 @@ defineProps<{
     </div>
   </li>
 </template>
+
+<style lang="scss">
+.layout-vertical-nav {
+  .layout-vertical-nav-collapsed & {
+    .title-text {
+      display: none !important;
+    }
+  }
+}
+</style>

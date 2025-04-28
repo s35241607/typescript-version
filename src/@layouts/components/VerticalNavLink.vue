@@ -21,8 +21,7 @@ defineProps<{
         :icon="item.icon || 'ri-checkbox-blank-circle-line'"
         class="nav-item-icon"
       />
-      <!-- 👉 Title -->
-      <span class="nav-item-title">
+      <span class="nav-item-title nav-link-title">
         {{ item.title }}
       </span>
       <span
@@ -41,6 +40,12 @@ defineProps<{
     display: flex;
     align-items: center;
     cursor: pointer;
+  }
+  .layout-vertical-nav-collapsed & {
+    .nav-link-title,
+    .nav-item-badge {
+      display: none !important;
+    }
   }
 }
 </style>

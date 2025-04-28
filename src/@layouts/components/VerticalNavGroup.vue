@@ -21,7 +21,7 @@ const isOpen = ref(false)
         :icon="item.icon || 'ri-checkbox-blank-circle-line'"
         class="nav-item-icon"
       />
-      <span class="nav-item-title">{{ item.title }}</span>
+      <span class="nav-item-title nav-group-title">{{ item.title }}</span>
       <span
         class="nav-item-badge"
         :class="item.badgeClass"
@@ -64,6 +64,15 @@ const isOpen = ref(false)
       .nav-group-children-wrapper {
         grid-template-rows: 1fr;
       }
+    }
+  }
+
+  .layout-vertical-nav-collapsed & {
+    .nav-group-title,
+    .nav-item-badge,
+    .nav-group-arrow,
+    .nav-group-children-wrapper {
+      display: none !important;
     }
   }
 }

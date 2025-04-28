@@ -195,3 +195,26 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 </template>
+
+<style lang="scss" scoped>
+.layout-vertical-nav {
+  .nav-item-title,
+  .nav-section-title .title-text {
+    transition: opacity 0.2s;
+  }
+  // 收合時隱藏標題
+  .layout-vertical-nav-collapsed & {
+    .nav-item-title,
+    .nav-section-title .title-text {
+      opacity: 0;
+      width: 0;
+      min-width: 0;
+      max-width: 0;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      display: inline-block;
+    }
+  }
+}
+</style>

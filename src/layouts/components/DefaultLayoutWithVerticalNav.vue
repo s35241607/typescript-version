@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref } from 'vue'
 import NavItems from '@/layouts/components/NavItems.vue'
 import logo from '@images/logo.svg?raw'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
@@ -8,13 +9,22 @@ import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import Breadcrumbs from '@/layouts/components/Breadcrumbs.vue'
+
+const isVerticalNavCollapsed = ref(false)
 </script>
 
 <template>
-  <VerticalNavLayout>
+  <VerticalNavLayout :is-vertical-nav-collapsed="isVerticalNavCollapsed">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
+        <!-- 收合/展開按鈕（僅桌面顯示） -->
+        <IconBtn
+          class="me-2 d-none d-lg-inline-flex"
+          @click="isVerticalNavCollapsed = !isVerticalNavCollapsed"
+        >
+          <VIcon :icon="isVerticalNavCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'" />
+        </IconBtn>
         <!-- 👉 Vertical nav toggle in overlay mode -->
         <IconBtn
           class="ms-n3 d-lg-none"
@@ -22,7 +32,6 @@ import Breadcrumbs from '@/layouts/components/Breadcrumbs.vue'
         >
           <VIcon icon="ri-menu-line" />
         </IconBtn>
-
         <!-- 👉 Breadcrumbs -->
         <Breadcrumbs />
 

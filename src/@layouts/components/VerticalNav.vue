@@ -8,10 +8,12 @@ interface Props {
   tag?: string | Component
   isOverlayNavActive: boolean
   toggleIsOverlayNavActive: (value: boolean) => void
+  isVerticalNavCollapsed?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   tag: 'aside',
+  isVerticalNavCollapsed: false,
 })
 
 const { mdAndDown } = useDisplay()
@@ -64,8 +66,10 @@ const handleNavScroll = (evt: Event) => {
             class="d-flex"
             v-html="logo"
           />
-
-          <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
+          <h1
+            v-if="!props.isVerticalNavCollapsed"
+            class="font-weight-medium leading-normal text-xl text-uppercase"
+          >
             Materio
           </h1>
         </RouterLink>
