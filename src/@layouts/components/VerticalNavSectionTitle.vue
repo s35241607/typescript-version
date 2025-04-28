@@ -25,6 +25,15 @@ defineProps<{
     .title-text {
       display: none !important;
     }
+    &.hovered {
+      .title-text {
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        column-gap: 0.625rem;
+      }
+    }
   }
 }
 </style>

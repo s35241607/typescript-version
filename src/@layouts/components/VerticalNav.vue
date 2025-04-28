@@ -38,6 +38,9 @@ const updateIsVerticalNavScrolled = (val: boolean) => isVerticalNavScrolled.valu
 const handleNavScroll = (evt: Event) => {
   isVerticalNavScrolled.value = (evt.target as HTMLElement).scrollTop > 0
 }
+
+// hover 狀態
+const isHovered = ref(false)
 </script>
 
 <template>
@@ -52,8 +55,11 @@ const handleNavScroll = (evt: Event) => {
         'visible': isOverlayNavActive,
         'scrolled': isVerticalNavScrolled,
         'overlay-nav': mdAndDown,
+        'hovered': props.isVerticalNavCollapsed && isHovered,
       },
     ]"
+    @mouseenter="isHovered = true"
+    @mouseleave="isHovered = false"
   >
     <!-- 👉 Header -->
     <div class="nav-header">
@@ -67,7 +73,7 @@ const handleNavScroll = (evt: Event) => {
             v-html="logo"
           />
           <h1
-            v-if="!props.isVerticalNavCollapsed"
+            v-if="!props.isVerticalNavCollapsed || isHovered"
             class="font-weight-medium leading-normal text-xl text-uppercase"
           >
             Materio

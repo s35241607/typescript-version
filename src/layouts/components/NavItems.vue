@@ -215,6 +215,19 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
       overflow: hidden;
       display: inline-block;
     }
+    &.hovered {
+      .nav-item-title,
+      .nav-section-title .title-text {
+        opacity: 1 !important;
+        width: initial !important;
+        min-width: initial !important;
+        max-width: initial !important;
+        padding: initial !important;
+        margin: initial !important;
+        overflow: initial !important;
+        display: inline-block !important;
+      }
+    }
   }
 }
 </style>

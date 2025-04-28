@@ -6,6 +6,11 @@ defineProps<{
 }>()
 
 const isOpen = ref(false)
+
+const handleGroupClick = (event: MouseEvent) => {
+  event.stopPropagation()
+  isOpen.value = !isOpen.value
+}
 </script>
 
 <template>
@@ -15,10 +20,10 @@ const isOpen = ref(false)
   >
     <div
       class="nav-group-label"
-      @click="isOpen = !isOpen"
+      @click="handleGroupClick"
     >
       <VIcon
-        :icon="item.icon || 'ri-checkbox-blank-circle-line'"
+        :icon="typeof item.icon === 'string' ? item.icon : 'ri-checkbox-blank-circle-line'"
         class="nav-item-icon"
       />
       <span class="nav-item-title nav-group-title">{{ item.title }}</span>
@@ -31,9 +36,13 @@ const isOpen = ref(false)
       <VIcon
         icon="ri-arrow-right-s-line"
         class="nav-group-arrow"
+        :style="isOpen ? 'transform: rotate(90deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"
       />
     </div>
-    <div class="nav-group-children-wrapper">
+    <div
+      v-show="isOpen"
+      class="nav-group-children-wrapper"
+    >
       <ul class="nav-group-children">
         <slot />
       </ul>
@@ -51,18 +60,12 @@ const isOpen = ref(false)
     }
 
     .nav-group-children-wrapper {
-      display: grid;
-      grid-template-rows: 0fr;
       transition: grid-template-rows 0.3s ease-in-out;
-
-      .nav-group-children {
-        overflow: hidden;
-      }
     }
 
     &.open {
       .nav-group-children-wrapper {
-        grid-template-rows: 1fr;
+        // grid-template-rows: 1fr;
       }
     }
   }
@@ -70,9 +73,15 @@ const isOpen = ref(false)
   .layout-vertical-nav-collapsed & {
     .nav-group-title,
     .nav-item-badge,
-    .nav-group-arrow,
-    .nav-group-children-wrapper {
+    .nav-group-arrow {
       display: none !important;
+    }
+    &.hovered {
+      .nav-group-title,
+      .nav-item-badge,
+      .nav-group-arrow {
+        display: initial !important;
+      }
     }
   }
 }

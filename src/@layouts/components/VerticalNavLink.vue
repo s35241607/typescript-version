@@ -46,6 +46,12 @@ defineProps<{
     .nav-item-badge {
       display: none !important;
     }
+    &.hovered {
+      .nav-link-title,
+      .nav-item-badge {
+        display: inline-block !important;
+      }
+    }
   }
 }
 </style>
