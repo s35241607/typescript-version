@@ -130,12 +130,13 @@ const isHovered = ref(false)
   inline-size: variables.$layout-vertical-nav-width;
   inset-block-start: 0;
   inset-inline-start: 0;
-  transition: inline-size 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
-  will-change: transform, inline-size;
+  transition: inline-size 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, inline-size, box-shadow;
 
   .nav-header {
     display: flex;
     align-items: center;
+    transition: padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
     .header-action {
       cursor: pointer;
@@ -153,16 +154,12 @@ const isHovered = ref(false)
 
   .app-title-wrapper {
     margin-inline-end: auto;
+    transition: margin 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .nav-items {
     block-size: 100%;
-
-    // ℹ️ We no loner needs this overflow styles as perfect scrollbar applies it
-    // overflow-x: hidden;
-
-    // // ℹ️ We used `overflow-y` instead of `overflow` to mitigate overflow x. Revert back if any issue found.
-    // overflow-y: auto;
+    transition: padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .nav-item-title {
@@ -170,6 +167,7 @@ const isHovered = ref(false)
     margin-inline-end: auto;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   // 👉 Collapsed
@@ -191,7 +189,7 @@ const isHovered = ref(false)
       }
     }
 
-    transition: transform 0.25s ease-in-out;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 </style>

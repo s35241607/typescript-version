@@ -73,12 +73,12 @@ export default defineComponent({
 .expand-enter-active,
 .expand-leave-active {
   overflow: hidden;
-  transition: block-size var(--expand-transition-duration, 0.25s) ease;
+  transition: height var(--expand-transition-duration, 0.25s) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .expand-enter-from,
 .expand-leave-to {
-  block-size: 0;
+  height: 0;
 }
 </style>
 

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { NavGroup } from '@layouts/types'
+import TransitionExpand from '@/@layouts/components/TransitionExpand.vue'
 
 defineProps<{
   item: Omit<NavGroup, 'children'>
@@ -39,14 +40,16 @@ const handleGroupClick = (event: MouseEvent) => {
         :style="isOpen ? 'transform: rotate(90deg); transition: transform 0.2s;' : 'transition: transform 0.2s;'"
       />
     </div>
-    <div
-      v-show="isOpen"
-      class="nav-group-children-wrapper"
-    >
-      <ul class="nav-group-children">
-        <slot />
-      </ul>
-    </div>
+    <TransitionExpand>
+      <div
+        v-if="isOpen"
+        class="nav-group-children-wrapper"
+      >
+        <ul class="nav-group-children">
+          <slot />
+        </ul>
+      </div>
+    </TransitionExpand>
   </li>
 </template>
 

@@ -53,5 +53,9 @@ defineProps<{
       }
     }
   }
+  .nav-link-title,
+  .nav-item-badge {
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), margin 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 </style>
