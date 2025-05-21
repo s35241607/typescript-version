@@ -33,7 +33,8 @@
     "vue3-perfect-scrollbar": "^2.0.0",
     "vuedraggable": "^2.24.3",
     "vuetify": "3.7.14",
-    "webfontloader": "^1.6.28"
+    "webfontloader": "^1.6.28",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@antfu/eslint-config-vue": "^0.43.1",

@@ -1,8 +1,9 @@
 <!-- Start of Selection -->
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { VDataTableServer } from 'vuetify/components/VDataTable'
 import { priceTableService } from '@/api/services/mockService'
+import BatchUploadPriceTableDialog from '@/views/PriceTable/BatchUploadPriceTableDialog.vue';
 import type { PriceTableResponse } from '@/api/services/mockService'
 import { formatDate } from '@/utils/date'
 import { useApi } from '@/composables/useApi'
@@ -34,12 +35,28 @@ const items = computed(() => {
 onMounted(() => {
   fetchPriceTables()
 })
+
+const batchUploadDialogRef = ref<InstanceType<typeof BatchUploadPriceTableDialog> | null>(null);
+
+const openBatchUploadDialog = () => {
+  batchUploadDialogRef.value?.openDialog();
+};
+
+const handleUploadCompleted = () => {
+  fetchPriceTables();
+  // Optionally, add a snackbar confirmation here if needed,
+  // but the dialog already shows one.
+};
 </script>
 
 <template>
   <VCard>
     <VCardItem>
       <VCardTitle>Price Table</VCardTitle>
+      <VSpacer />
+      <VBtn color="primary" @click="openBatchUploadDialog">
+        Batch Upload
+      </VBtn>
     </VCardItem>
     <VCardText>
       <VRow>
@@ -97,4 +114,5 @@ onMounted(() => {
       </template>
     </VDataTable>
   </VCard>
+  <BatchUploadPriceTableDialog ref="batchUploadDialogRef" @upload-completed="handleUploadCompleted" />
 </template>
