@@ -2,6 +2,7 @@
 import { useSnackbarStore } from './stores/useSnackbarStore'
 import { useToastStore } from './stores/useToastStore'
 import { useLoadingStore } from '@/stores/useLoadingStore'
+import VersionUpdateNotification from '@/components/VersionUpdateNotification.vue'
 
 const loadingStore = useLoadingStore()
 const snackbarStore = useSnackbarStore()
@@ -48,6 +49,10 @@ const { queue } = useToastStore()
         {{ item.message }}
       </VAlert>
     </div>
+
+    <!-- 新版本通知 -->
+    <VersionUpdateNotification />
+
     <RouterView />
   </VApp>
 </template>
@@ -67,4 +72,3 @@ const { queue } = useToastStore()
   margin-block-end: 10px;
 }
 </style>
-./stores/useSnackbarStore
