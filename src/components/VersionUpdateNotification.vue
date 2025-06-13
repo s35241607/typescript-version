@@ -40,7 +40,7 @@ onMounted(() => {
   <VSnackbar
     v-model="show"
     :color="successColor"
-    timeout="0"
+    :timeout="0"
     location="top right"
     multi-line
   >

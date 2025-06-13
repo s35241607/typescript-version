@@ -24,13 +24,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-
-      - name: Bump patch version and generate version.json
-        run: |
-          npm version patch --no-git-tag-version
-          VERSION=$(node -p "require('./package.json').version")
-          echo "{ \"version\": \"${VERSION}\", \"buildTime\": \"$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")\" }" > ./public/version.json
-
       - name: Build the project
         run: pnpm build
 
