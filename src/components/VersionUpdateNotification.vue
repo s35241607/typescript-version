@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
+import packageInfo from '../../package.json'
 
 const show = ref(false)
 const latestVersion = ref('')
-const localVersion = import.meta.env.VITE_APP_VERSION || ''
+const currentVersion = packageInfo.version
 async function checkVersion() {
   try {
     // 取得最新版本資訊，不快取，支援 Vite base 路徑
@@ -14,7 +15,7 @@ async function checkVersion() {
 
     latestVersion.value = remoteVersion
 
-    if (remoteVersion && remoteVersion !== localVersion)
+    if (remoteVersion && remoteVersion !== currentVersion)
       show.value = true
   }
   catch (e) {
