@@ -1,8 +1,13 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-// Node.js 腳本允許使用 require 語法
-const { writeFileSync } = require('node:fs')
-const { join } = require('node:path')
-const pkg = require('./package.json')
+// Node.js 腳本使用 ES 模組語法
+import { readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+// 讀取 package.json
+const pkg = JSON.parse(readFileSync(join(__dirname, 'package.json'), 'utf-8'))
 
 const versionInfo = {
   version: pkg.version,

@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 
-const show = ref(true)
+const show = ref(false)
 const latestVersion = ref('')
 const localVersion = import.meta.env.VITE_APP_VERSION || ''
 async function checkVersion() {
