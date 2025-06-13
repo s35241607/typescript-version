@@ -24,11 +24,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Generate version.json
-        run: node generate-version.js
-
-      - name: Build the project
+      - name: Build the project (includes version generation)
         run: pnpm build
+
+      - name: Verify build output
+        run: |
+          echo "檢查建置後的 dist 資料夾..."
+          ls -la dist/
+          echo "檢查 dist 中的 version.json:"
+          cat dist/version.json
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4

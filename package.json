@@ -1,11 +1,11 @@
 {
   "name": "materio-vuetify-vuejs-admin-template-free",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --open",
-    "build": "vite build",
+    "build": "node generate-version.js && vite build",
     "deploy": "vite build && gh-pages -d dist",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
