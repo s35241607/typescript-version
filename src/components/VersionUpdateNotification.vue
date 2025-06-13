@@ -87,7 +87,7 @@ onMounted(() => {
   border-inline-start: 3px solid var(--v-theme-primary);
   box-shadow: 0 4px 20px 0 rgba(var(--v-shadow-key-umbra-color), 0.1),
     0 2px 6px 0 rgba(var(--v-theme-primary), 0.15);
-  color: var(--v-theme-on-surface);
+  color: rgb(var(--v-theme-on-surface));
   font-family: inherit;
   gap: 8px;
   inset-block-start: 16px;
@@ -99,7 +99,7 @@ onMounted(() => {
 }
 
 .toast-inline-icon {
-  color: var(--v-theme-primary);
+  color: rgb(var(--v-theme-primary));
   font-size: 1.1rem;
   margin-inline-end: 6px;
 }
@@ -122,7 +122,7 @@ onMounted(() => {
 }
 
 .toast-title {
-  color: var(--v-theme-on-surface);
+  color: rgb(var(--v-theme-on-surface));
   font-size: 0.9rem;
   font-weight: 500;
   white-space: nowrap;
@@ -133,7 +133,7 @@ onMounted(() => {
   background: linear-gradient(135deg, var(--v-theme-primary), var(--v-theme-primary-darken-1));
 
   /* box-shadow: 0 1px 1px 0 rgba(var(--v-theme-primary), 0.3); */
-  color: var(--v-theme-on-primary);
+  color: rgb(var(--v-theme-on-primary));
   font-size: 0.75rem;
   font-weight: 600;
   padding-block: 2px;
@@ -153,7 +153,7 @@ onMounted(() => {
   border: none;
   border-radius: 6px;
   background: none;
-  color: var(--v-theme-on-surface);
+  color: rgb(var(--v-theme-on-surface));
   cursor: pointer;
   font-size: 0.85rem;
   gap: 3px;
@@ -164,17 +164,17 @@ onMounted(() => {
 }
 
 .toast-update {
-  background: var(--v-theme-primary);
+  background: rgb(var(--v-theme-primary));
 
   /* box-shadow: 0 1px 4px 0 rgba(var(--v-theme-primary), 0.25); */
-  color: var(--v-theme-on-primary);
+  color: rgb(var(--v-theme-on-primary));
   font-weight: 500;
   margin-inline-start: 4px;
   white-space: nowrap;
 }
 
 .toast-update:hover {
-  background: var(--v-theme-primary-darken-1);
+  background: rgb(var(--v-theme-primary-darken-1));
   box-shadow: 0 3px 12px 0 rgba(var(--v-theme-primary), 0.4);
   transform: translateY(-0.5px);
 }
