@@ -11,8 +11,9 @@ const successColor = theme.current.value.colors.success
 
 async function checkVersion() {
   try {
-    // 取得最新版本資訊，不快取
-    const res = await axios.get('/version.json', { headers: { 'Cache-Control': 'no-cache' } })
+    // 取得最新版本資訊，不快取，支援 Vite base 路徑
+    const versionUrl = `${import.meta.env.BASE_URL}version.json`
+    const res = await axios.get(versionUrl, { headers: { 'Cache-Control': 'no-cache' } })
     const remoteVersion = res.data.version
 
     latestVersion.value = remoteVersion
