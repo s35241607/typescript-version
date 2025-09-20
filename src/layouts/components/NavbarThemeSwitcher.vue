@@ -11,12 +11,32 @@ const themes: ThemeSwitcherTheme[] = [
     icon: 'ri-moon-clear-line',
   },
   {
+    name: 'ocean',
+    icon: 'ri-water-flash-line',
+  },
+  {
+    name: 'oceanDark',
+    icon: 'ri-moon-foggy-line',
+  },
+  {
+    name: 'sunset',
+    icon: 'ri-sun-cloudy-line',
+  },
+  {
+    name: 'forest',
+    icon: 'ri-leaf-line',
+  },
+  {
+    name: 'sakura',
+    icon: 'ri-flower-line',
+  },
+  {
     name: 'black',
-    icon: 'ri-moon-clear-line',
+    icon: 'ri-contrast-2-line',
   },
   {
     name: 'black2',
-    icon: 'ri-moon-clear-line',
+    icon: 'ri-contrast-drop-2-line',
   },
   {
     name: 'black3',

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdvanceDataTable: typeof import('./src/components/AdvanceDataTable.vue')['default']
+    AdvancedThemeSwitcher: typeof import('./src/components/AdvancedThemeSwitcher.vue')['default']
     CardStatisticsHorizontal: typeof import('./src/@core/components/cards/CardStatisticsHorizontal.vue')['default']
     CardStatisticsVertical: typeof import('./src/@core/components/cards/CardStatisticsVertical.vue')['default']
     CardStatisticsWithImages: typeof import('./src/@core/components/cards/CardStatisticsWithImages.vue')['default']
@@ -20,6 +21,5 @@ declare module 'vue' {
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
     UpgradeToPro: typeof import('./src/components/UpgradeToPro.vue')['default']
     VersionUpdateNotification: typeof import('./src/components/VersionUpdateNotification.vue')['default']
-    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

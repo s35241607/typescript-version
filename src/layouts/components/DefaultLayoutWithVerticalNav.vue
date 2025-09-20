@@ -6,7 +6,7 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
-import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
+import AdvancedThemeSwitcher from '@/components/AdvancedThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import Breadcrumbs from '@/layouts/components/Breadcrumbs.vue'
 
@@ -37,7 +37,7 @@ const isVerticalNavCollapsed = ref(false)
 
         <VSpacer />
 
-        <NavbarThemeSwitcher />
+        <AdvancedThemeSwitcher />
 
         <IconBtn class="me-2">
           <VIcon icon="ri-notification-line" />

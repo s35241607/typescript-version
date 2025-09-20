@@ -1,1 +1,198 @@
 // Write your overrides
+
+// 🎨 新主題的自定義樣式
+// 針對新配色主題的增強效果
+
+// 🌊 Ocean 主題的特殊效果
+.v-theme--ocean {
+  .v-card {
+    border: 1px solid rgba(255, 255, 255, 20%);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px 0 rgba(14, 165, 233, 15%);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    &:hover {
+      box-shadow: 0 12px 40px 0 rgba(14, 165, 233, 25%);
+      transform: translateY(-2px);
+    }
+  }
+  
+  .v-btn {
+    border-radius: 12px;
+    
+    &.v-btn--elevated {
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 30%);
+    }
+  }
+  
+  .v-list-item {
+    border-radius: 8px;
+    margin-block: 2px;
+    margin-inline: 0;
+  }
+}
+
+.v-theme--ocean-dark {
+  .v-card {
+    border: 1px solid rgba(14, 165, 233, 10%);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 30%);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    &:hover {
+      border-color: rgba(14, 165, 233, 20%);
+      box-shadow: 0 12px 40px 0 rgba(15, 23, 42, 50%);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// 🌅 Sunset 主題的特殊效果  
+.v-theme--sunset {
+  .v-card {
+    border: 1px solid rgba(249, 115, 22, 10%);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 24px rgba(249, 115, 22, 15%);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 10px 32px rgba(249, 115, 22, 25%);
+      transform: translateY(-2px);
+    }
+  }
+  
+  .v-btn {
+    border-radius: 16px;
+    
+    &.v-btn--variant-flat {
+      background: linear-gradient(135deg, #F97316 0%, #EC4899 100%);
+    }
+  }
+}
+
+// 🌲 Forest 主題的特殊效果
+.v-theme--forest {
+  .v-card {
+    border: 1px solid rgba(5, 150, 105, 10%);
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 24px rgba(5, 150, 105, 10%);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 8px 30px rgba(5, 150, 105, 20%);
+      transform: translateY(-1px);
+    }
+  }
+  
+  .v-btn {
+    border-radius: 20px;
+  }
+  
+  .v-text-field .v-field {
+    border-radius: 12px;
+  }
+}
+
+// 🌸 Sakura 主題的特殊效果
+.v-theme--sakura {
+  .v-card {
+    border: 1px solid rgba(236, 72, 153, 10%);
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 24px rgba(236, 72, 153, 10%);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      box-shadow: 0 8px 30px rgba(236, 72, 153, 20%);
+      transform: translateY(-1px);
+    }
+  }
+  
+  .v-btn {
+    border-radius: 25px;
+    
+    &.v-btn--variant-flat {
+      background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
+    }
+  }
+  
+  .v-chip {
+    border-radius: 20px;
+  }
+}
+
+// 🌙 通用的透明度和動畫效果
+.v-theme--ocean,
+.v-theme--ocean-dark,
+.v-theme--sunset,
+.v-theme--forest,
+.v-theme--sakura {
+  .v-navigation-drawer {
+    backdrop-filter: blur(20px);
+  }
+  
+  .v-app-bar {
+    backdrop-filter: blur(20px);
+  }
+  
+  .v-data-table {
+    .v-data-table__wrapper {
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    
+    .v-data-table-header {
+      border-radius: 12px 12px 0 0;
+    }
+  }
+  
+  .v-menu .v-list {
+    border-radius: 12px;
+    backdrop-filter: blur(15px);
+  }
+  
+  .v-dialog .v-card {
+    border-radius: 20px;
+  }
+  
+  .v-snackbar .v-snackbar__content {
+    border-radius: 12px;
+    backdrop-filter: blur(15px);
+  }
+  
+  // 動畫效果
+  .v-list-item,
+  .v-btn,
+  .v-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  
+  // 自定義滾動條
+  ::-webkit-scrollbar {
+    block-size: 8px;
+    inline-size: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: rgba(var(--v-theme-surface), 0.1);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(var(--v-theme-primary), 0.3);
+    
+    &:hover {
+      background: rgba(var(--v-theme-primary), 0.5);
+    }
+  }
+}
+
+// 特殊的玻璃質感效果
+.glass-morphism {
+  border: 1px solid rgba(var(--v-theme-primary), 0.125);
+  border-radius: 12px;
+  backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(var(--v-theme-surface), 0.75);
+}
