@@ -75,6 +75,64 @@ const availableUsers = [
     email: 'mike@example.com',
     avatar: 'https://cdn.vuetifyjs.com/images/mike.jpg',
   },
+  {
+    id: 4,
+    name: '王小明',
+    email: 'wang@example.com',
+    avatar: '',
+  },
+  {
+    id: 5,
+    name: '李小華',
+    email: 'li@example.com',
+    avatar: '',
+  },
+]
+
+// Mention 用戶列表（可以和 availableUsers 不同，用於 @mention 功能）
+const mentionUsers = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    avatar: 'https://cdn.vuetifyjs.com/images/john.jpg',
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    avatar: 'https://cdn.vuetifyjs.com/images/jane.jpg',
+  },
+  {
+    id: 3,
+    name: 'Mike Johnson',
+    email: 'mike@example.com',
+    avatar: 'https://cdn.vuetifyjs.com/images/mike.jpg',
+  },
+  {
+    id: 4,
+    name: '王小明',
+    email: 'wang@example.com',
+    avatar: '',
+  },
+  {
+    id: 5,
+    name: '李小華',
+    email: 'li@example.com',
+    avatar: '',
+  },
+  {
+    id: 6,
+    name: '張三',
+    email: 'zhang@example.com',
+    avatar: '',
+  },
+  {
+    id: 7,
+    name: '李四',
+    email: 'li4@example.com',
+    avatar: '',
+  },
 ]
 
 // 模擬標籤資料
@@ -126,6 +184,12 @@ const getSafeHtml = (html: string) => {
   // 這裡可以使用 DOMPurify 或其他 sanitizer
   // 目前為了演示，僅移除 script 標籤
   return html.replace(/<script[^>]*>.*?<\/script>/gi, '')
+}
+
+// Mention 事件處理
+const handleMention = (user: any) => {
+  console.log('提及用戶:', user)
+  snackbarStore.show(`提及了 ${user.name}`, 'info')
 }
 
 // 表單處理
@@ -237,12 +301,24 @@ const handleCancel = () => {
               <VRow>
                 <VCol cols="12">
                   <VLabel class="text-body-2 font-weight-medium mb-2">
-                    內容描述 *
+                    內容描述 * 
+                    <VChip
+                      size="x-small"
+                      color="info"
+                      variant="tonal"
+                      class="ml-2"
+                    >
+                      支援 @mention
+                    </VChip>
                   </VLabel>
                   <QuillEditor
                     v-model="ticketForm.description"
                     :height="300"
+                    :mention-users="mentionUsers"
+                    :enable-mention="true"
+                    placeholder="請輸入工單內容... 輸入 @ 可以提及其他用戶"
                     class="mb-4"
+                    @mention="handleMention"
                   />
                 </VCol>
               </VRow>
