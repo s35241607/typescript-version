@@ -41,6 +41,18 @@ export const routes = [
         meta: { breadcrumb: ':username' },
       },
       {
+        path: 'tickets',
+        name: 'TicketList',
+        component: () => import('@/pages/tickets/list.vue'),
+        meta: { breadcrumb: 'Tickets' },
+      },
+      {
+        path: 'tickets/create',
+        name: 'CreateTicket',
+        component: () => import('@/pages/tickets/create.vue'),
+        meta: { breadcrumb: 'Create Ticket' },
+      },
+      {
         path: 'test',
         name: 'Test',
         component: () => import('@/pages/Test/TestPage.vue'),

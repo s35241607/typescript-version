@@ -54,6 +54,31 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 
+  <!-- 👉 Tickets -->
+  <VerticalNavGroup
+    :item="{
+      title: 'Tickets',
+      icon: 'ri-ticket-line',
+      badgeContent: '新',
+      badgeClass: 'bg-primary text-white',
+    }"
+  >
+    <VerticalNavLink
+      :item="{
+        title: 'Ticket 列表',
+        to: '/tickets',
+        icon: 'ri-list-unordered',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
+        title: '建立 Ticket',
+        to: '/tickets/create',
+        icon: 'ri-add-circle-line',
+      }"
+    />
+  </VerticalNavGroup>
+
   <!-- New NavLink for Price Review Dashboard -->
   <VerticalNavLink
     :item="{

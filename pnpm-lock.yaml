@@ -25,6 +25,9 @@ importers:
       '@iconify-json/bxl':
         specifier: ^1.1.10
         version: 1.2.2
+      '@tinymce/tinymce-vue':
+        specifier: ^6.3.0
+        version: 6.3.0(tinymce@8.1.2)(vue@3.5.13(typescript@5.7.2))
       '@vueuse/core':
         specifier: ^10.11.1
         version: 10.11.1(vue@3.5.13(typescript@5.7.2))
@@ -46,6 +49,9 @@ importers:
       roboto-fontface:
         specifier: ^0.10.0
         version: 0.10.0
+      tinymce:
+        specifier: ^8.1.2
+        version: 8.1.2
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.7.2)
@@ -902,6 +908,15 @@ packages:
     peerDependencies:
       eslint: '*'
       typescript: '*'
+
+  '@tinymce/tinymce-vue@6.3.0':
+    resolution: {integrity: sha512-DSP8Jhd3XqCCliTnusfbmz3D8GqQ4iRzkc4aadYHDcJPVjkaqopJ61McOdH82CSy599vGLkPjGzqJYWJkRMiUA==}
+    peerDependencies:
+      tinymce: ^8.0.0 || ^7.0.0 || ^6.0.0 || ^5.5.1
+      vue: ^3.0.0
+    peerDependenciesMeta:
+      tinymce:
+        optional: true
 
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -3171,6 +3186,9 @@ packages:
   tinyexec@0.3.2:
     resolution: {integrity: sha512-KQQR9yN7R5+OSwaK0XQoj22pwHoTlgYqmUscPYoknOoWCWfj/5/ABTMRi69FrKU5ffPVh5QcFikpWJI/P1ocHA==}
 
+  tinymce@8.1.2:
+    resolution: {integrity: sha512-KITxHEEHRlxC5xOnxA123eAJ67NgsWxNphtItWt9TRu07DiTZrWIqJeIKRX9euE51/l3kJO4WQiqoBXKTJJGsA==}
+
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -4191,6 +4209,12 @@ snapshots:
       typescript: 5.7.2
     transitivePeerDependencies:
       - supports-color
+
+  '@tinymce/tinymce-vue@6.3.0(tinymce@8.1.2)(vue@3.5.13(typescript@5.7.2))':
+    dependencies:
+      vue: 3.5.13(typescript@5.7.2)
+    optionalDependencies:
+      tinymce: 8.1.2
 
   '@trysound/sax@0.2.0': {}
 
@@ -6959,6 +6983,8 @@ snapshots:
   text-table@0.2.0: {}
 
   tinyexec@0.3.2: {}
+
+  tinymce@8.1.2: {}
 
   to-regex-range@5.0.1:
     dependencies:
