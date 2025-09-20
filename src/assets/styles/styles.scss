@@ -1,87 +1,203 @@
 // Write your overrides
 
-// 🎨 新主題的自定義樣式
-// 針對新配色主題的增強效果
+// 🎨 主題特定樣式 - 優化版本
+// 為所有新主題提供一致的視覺效果
 
-// 🌊 Ocean 主題的特殊效果
-.v-theme--ocean {
+// 所有新主題的通用樣式
+.v-theme--ocean,
+.v-theme--ocean-dark,
+.v-theme--sunset,
+.v-theme--forest,
+.v-theme--sakura,
+.v-theme--midnight,
+.v-theme--deep-space,
+.v-theme--carbon {
+  // 卡片樣式
   .v-card {
-    border: 1px solid rgba(255, 255, 255, 20%);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px 0 rgba(14, 165, 233, 15%);
+    border: 1px solid rgba(var(--v-theme-primary), 8%);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     
     &:hover {
-      box-shadow: 0 12px 40px 0 rgba(14, 165, 233, 25%);
+      border-color: rgba(var(--v-theme-primary), 15%);
       transform: translateY(-2px);
     }
   }
   
+  // 按鈕樣式
   .v-btn {
     border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     
     &.v-btn--elevated {
-      box-shadow: 0 4px 16px rgba(14, 165, 233, 30%);
+      box-shadow: 0 4px 16px rgba(var(--v-theme-primary), 25%);
     }
   }
   
+  // 列表項目
   .v-list-item {
     border-radius: 8px;
     margin-block: 2px;
-    margin-inline: 0;
+    transition: all 0.3s ease;
+  }
+  
+  // 文字欄位
+  .v-text-field .v-field {
+    border-radius: 12px;
+  }
+  
+  // 晶片
+  .v-chip {
+    border-radius: 16px;
+  }
+  
+  // 導航抽屜
+  .v-navigation-drawer {
+    backdrop-filter: blur(20px);
+    border-inline-end: 1px solid rgba(var(--v-theme-primary), 5%);
+  }
+  
+  // 應用程式列
+  .v-app-bar {
+    backdrop-filter: blur(20px);
+    border-block-end: 1px solid rgba(var(--v-theme-primary), 5%);
+  }
+  
+  // 資料表格
+  .v-data-table .v-data-table__wrapper {
+    overflow: hidden;
+    border: 1px solid rgba(var(--v-theme-primary), 8%);
+    border-radius: 16px;
+  }
+  
+  .v-data-table .v-data-table-header {
+    border-radius: 16px 16px 0 0;
+    backdrop-filter: blur(8px);
+  }
+  
+  // 選單
+  .v-menu .v-list {
+    border: 1px solid rgba(var(--v-theme-primary), 8%);
+    border-radius: 16px;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(var(--v-theme-surface), 10%);
+  }
+  
+  // 對話框
+  .v-dialog .v-card {
+    border: 1px solid rgba(var(--v-theme-primary), 10%);
+    border-radius: 24px;
+  }
+  
+  // 通知條
+  .v-snackbar .v-snackbar__content {
+    border: 1px solid rgba(var(--v-theme-primary), 8%);
+    border-radius: 16px;
+    backdrop-filter: blur(16px);
+  }
+  
+  // 摺疊面板
+  .v-expansion-panels .v-expansion-panel {
+    border: 1px solid rgba(var(--v-theme-primary), 5%);
+    border-radius: 12px;
+    margin-block-end: 8px;
+    
+    &.v-expansion-panel--active {
+      border-color: rgba(var(--v-theme-primary), 12%);
+    }
+  }
+  
+  // 標籤頁
+  .v-tabs .v-tab {
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    &.v-tab--selected {
+      background: rgba(var(--v-theme-primary), 10%);
+    }
+  }
+  
+  // 滾動條
+  ::-webkit-scrollbar {
+    block-size: 6px;
+    inline-size: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: rgba(var(--v-theme-surface), 5%);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: linear-gradient(45deg, rgba(var(--v-theme-primary), 30%), rgba(var(--v-theme-secondary), 20%));
+    
+    &:hover {
+      background: linear-gradient(45deg, rgba(var(--v-theme-primary), 50%), rgba(var(--v-theme-secondary), 40%));
+    }
+  }
+  
+  // 選擇文字
+  ::selection {
+    background: rgba(var(--v-theme-primary), 20%);
+    color: rgb(var(--v-theme-on-primary));
+  }
+}
+
+// 特定主題的自訂樣式
+.v-theme--ocean {
+  .v-card {
+    box-shadow: 0 8px 32px rgba(14, 165, 233, 12%);
+    
+    &:hover {
+      box-shadow: 0 12px 40px rgba(14, 165, 233, 20%);
+    }
+  }
+  
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
   }
 }
 
 .v-theme--ocean-dark {
   .v-card {
-    border: 1px solid rgba(14, 165, 233, 10%);
-    backdrop-filter: blur(15px);
-    box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 30%);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 30%);
     
     &:hover {
-      border-color: rgba(14, 165, 233, 20%);
-      box-shadow: 0 12px 40px 0 rgba(15, 23, 42, 50%);
-      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(15, 23, 42, 50%);
     }
+  }
+  
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%);
   }
 }
 
-// 🌅 Sunset 主題的特殊效果  
 .v-theme--sunset {
   .v-card {
-    border: 1px solid rgba(249, 115, 22, 10%);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 6px 24px rgba(249, 115, 22, 15%);
-    transition: all 0.3s ease;
+    box-shadow: 0 6px 24px rgba(249, 115, 22, 12%);
     
     &:hover {
-      box-shadow: 0 10px 32px rgba(249, 115, 22, 25%);
-      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(249, 115, 22, 20%);
     }
   }
   
   .v-btn {
     border-radius: 16px;
-    
-    &.v-btn--variant-flat {
-      background: linear-gradient(135deg, #F97316 0%, #EC4899 100%);
-    }
+  }
+  
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
   }
 }
 
-// 🌲 Forest 主題的特殊效果
 .v-theme--forest {
   .v-card {
-    border: 1px solid rgba(5, 150, 105, 10%);
-    border-radius: 16px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 6px 24px rgba(5, 150, 105, 10%);
-    transition: all 0.3s ease;
+    box-shadow: 0 6px 24px rgba(5, 150, 105, 8%);
     
     &:hover {
-      box-shadow: 0 8px 30px rgba(5, 150, 105, 20%);
-      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(5, 150, 105, 15%);
     }
   }
   
@@ -89,32 +205,27 @@
     border-radius: 20px;
   }
   
-  .v-text-field .v-field {
-    border-radius: 12px;
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #059669 0%, #0891b2 100%);
   }
 }
 
-// 🌸 Sakura 主題的特殊效果
 .v-theme--sakura {
   .v-card {
-    border: 1px solid rgba(236, 72, 153, 10%);
     border-radius: 20px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 6px 24px rgba(236, 72, 153, 10%);
-    transition: all 0.3s ease;
+    box-shadow: 0 6px 24px rgba(236, 72, 153, 8%);
     
     &:hover {
-      box-shadow: 0 8px 30px rgba(236, 72, 153, 20%);
-      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(236, 72, 153, 15%);
     }
   }
   
   .v-btn {
     border-radius: 25px;
-    
-    &.v-btn--variant-flat {
-      background: linear-gradient(135deg, #EC4899 0%, #A855F7 100%);
-    }
+  }
+  
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
   }
   
   .v-chip {
@@ -122,77 +233,75 @@
   }
 }
 
-// 🌙 通用的透明度和動畫效果
-.v-theme--ocean,
-.v-theme--ocean-dark,
-.v-theme--sunset,
-.v-theme--forest,
-.v-theme--sakura {
-  .v-navigation-drawer {
-    backdrop-filter: blur(20px);
-  }
-  
-  .v-app-bar {
-    backdrop-filter: blur(20px);
-  }
-  
-  .v-data-table {
-    .v-data-table__wrapper {
-      overflow: hidden;
-      border-radius: 12px;
-    }
-    
-    .v-data-table-header {
-      border-radius: 12px 12px 0 0;
-    }
-  }
-  
-  .v-menu .v-list {
-    border-radius: 12px;
-    backdrop-filter: blur(15px);
-  }
-  
-  .v-dialog .v-card {
-    border-radius: 20px;
-  }
-  
-  .v-snackbar .v-snackbar__content {
-    border-radius: 12px;
-    backdrop-filter: blur(15px);
-  }
-  
-  // 動畫效果
-  .v-list-item,
-  .v-btn,
+.v-theme--midnight {
   .v-card {
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  }
-  
-  // 自定義滾動條
-  ::-webkit-scrollbar {
-    block-size: 8px;
-    inline-size: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    border-radius: 10px;
-    background: rgba(var(--v-theme-surface), 0.1);
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background: rgba(var(--v-theme-primary), 0.3);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 40%);
     
     &:hover {
-      background: rgba(var(--v-theme-primary), 0.5);
+      box-shadow: 0 12px 40px rgba(15, 23, 42, 60%);
     }
+  }
+  
+  .v-btn {
+    border-radius: 10px;
+  }
+  
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
   }
 }
 
-// 特殊的玻璃質感效果
+.v-theme--deep-space {
+  .v-card {
+    backdrop-filter: blur(25px);
+    box-shadow: 0 10px 40px rgba(3, 7, 18, 50%);
+    
+    &:hover {
+      box-shadow: 0 15px 50px rgba(3, 7, 18, 70%);
+      transform: translateY(-3px);
+    }
+  }
+  
+  .v-btn {
+    border-radius: 8px;
+  }
+  
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
+  }
+}
+
+.v-theme--carbon {
+  .v-card {
+    box-shadow: 0 8px 32px rgba(24, 24, 27, 40%);
+    
+    &:hover {
+      box-shadow: 0 12px 40px rgba(24, 24, 27, 60%);
+    }
+  }
+  
+  .v-btn {
+    border-radius: 14px;
+  }
+  
+  .v-btn.v-btn--variant-flat {
+    background: linear-gradient(135deg, #f97316 0%, #22d3ee 100%);
+  }
+}
+
+// 玻璃質感效果類別
 .glass-morphism {
-  border: 1px solid rgba(var(--v-theme-primary), 0.125);
-  border-radius: 12px;
-  backdrop-filter: blur(16px) saturate(180%);
-  background-color: rgba(var(--v-theme-surface), 0.75);
+  border: 1px solid rgba(var(--v-theme-primary), 12%);
+  border-radius: 16px;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: linear-gradient(135deg, rgba(var(--v-theme-surface), 80%) 0%, rgba(var(--v-theme-surface), 60%) 100%);
+  box-shadow: 0 8px 32px rgba(var(--v-theme-surface), 10%);
+}
+
+.glass-morphism-intense {
+  border: 1px solid rgba(var(--v-theme-primary), 20%);
+  border-radius: 20px;
+  backdrop-filter: blur(30px) saturate(200%);
+  background: linear-gradient(135deg, rgba(var(--v-theme-surface), 90%) 0%, rgba(var(--v-theme-surface), 70%) 100%);
+  box-shadow: 0 12px 40px rgba(var(--v-theme-surface), 15%);
 }
