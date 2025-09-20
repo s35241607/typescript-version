@@ -2,7 +2,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSnackbarStore } from '@/stores/useSnackbarStore'
-import TinyMceEditor from '@/components/TinyMceEditor.vue'
+import QuillEditor from '@/components/QuillEditor.vue'
 
 // 頁面標題
 defineOptions({
@@ -36,34 +36,7 @@ const titleRules = [
   (v: string) => v.length <= 100 || '標題不能超過 100 個字元',
 ]
 
-// TinyMCE 編輯器配置
-const editorConfig = {
-  height: 300,
-  menubar: false,
-  plugins: [
-    'advlist',
-    'autolink',
-    'lists',
-    'link',
-    'image',
-    'charmap',
-    'preview',
-    'anchor',
-    'searchreplace',
-    'visualblocks',
-    'code',
-    'fullscreen',
-    'insertdatetime',
-    'media',
-    'table',
-    'help',
-    'wordcount',
-  ],
-  toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px }',
-  skin: 'oxide',
-  content_css: 'default',
-}
+// 表單驗證規則
 
 // 優先級選項
 const priorityOptions = [
@@ -266,9 +239,9 @@ const handleCancel = () => {
                   <VLabel class="text-body-2 font-weight-medium mb-2">
                     內容描述 *
                   </VLabel>
-                  <TinyMceEditor
+                  <QuillEditor
                     v-model="ticketForm.description"
-                    :config="editorConfig"
+                    :height="300"
                     class="mb-4"
                   />
                 </VCol>
