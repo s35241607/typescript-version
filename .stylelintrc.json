@@ -1,10 +1,10 @@
 {
   "extends": [
-    "stylelint-config-standard-scss",
-    "stylelint-config-idiomatic-order"
+    "stylelint-config-standard-scss"
   ],
   "plugins": [
     "stylelint-use-logical-spec",
+    "stylelint-order",
     "@stylistic/stylelint-plugin"
   ],
   "overrides": [
@@ -30,6 +30,38 @@
     ],
     "@stylistic/indentation": 2,
     "liberty/use-logical-spec": true,
+    "order/order": [
+      "custom-properties",
+      "dollar-variables",
+      "at-variables",
+      "declarations",
+      {
+        "type": "rule",
+        "selector": "&::before"
+      },
+      {
+        "type": "rule",
+        "selector": "&::after"
+      },
+      "rules",
+      {
+        "type": "rule",
+        "selector": "&:hover"
+      },
+      {
+        "type": "rule",
+        "selector": "&:focus"
+      },
+      {
+        "type": "rule",
+        "selector": "&:active"
+      },
+      {
+        "type": "rule",
+        "selector": "&:visited"
+      },
+      "at-rules"
+    ],
     "selector-class-pattern": null,
     "color-function-notation": null,
     "annotation-no-unknown": [

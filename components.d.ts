@@ -20,8 +20,8 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
-    TinyMceEditor: typeof import('./src/components/TinyMceEditor.vue')['default']
     UpgradeToPro: typeof import('./src/components/UpgradeToPro.vue')['default']
     VersionUpdateNotification: typeof import('./src/components/VersionUpdateNotification.vue')['default']
+    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }
