@@ -54,6 +54,15 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 
+  <!-- TagSelector Demo -->
+  <VerticalNavLink
+    :item="{
+      title: 'Tag Selector Demo',
+      icon: 'ri-price-tag-3-line',
+      to: '/tag-selector-demo',
+    }"
+  />
+
   <!-- 👉 Tickets -->
   <VerticalNavGroup
     :item="{
@@ -227,26 +236,28 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
   .nav-section-title .title-text {
     transition: opacity 0.2s;
   }
+
   // 收合時隱藏標題
   .layout-vertical-nav-collapsed & {
     .nav-item-title,
     .nav-section-title .title-text {
       opacity: 0;
-      width: 0;
-      min-width: 0;
-      max-width: 0;
+      inline-size: 0;
+      min-inline-size: 0;
+      max-inline-size: 0;
       padding: 0;
       margin: 0;
       overflow: hidden;
       display: inline-block;
     }
+
     &.hovered {
       .nav-item-title,
       .nav-section-title .title-text {
         opacity: 1 !important;
-        width: initial !important;
-        min-width: initial !important;
-        max-width: initial !important;
+        inline-size: initial !important;
+        min-inline-size: initial !important;
+        max-inline-size: initial !important;
         padding: initial !important;
         margin: initial !important;
         overflow: initial !important;

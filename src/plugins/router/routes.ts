@@ -115,6 +115,12 @@ export const routes = [
         component: () => import('@/pages/form-layouts.vue'),
         meta: { breadcrumb: 'Form Layouts' },
       },
+      {
+        path: 'tag-selector-demo',
+        name: 'TagSelectorDemo',
+        component: () => import('@/pages/TagSelectorDemo.vue'),
+        meta: { breadcrumb: 'Tag Selector Demo' },
+      },
     ],
   },
   {

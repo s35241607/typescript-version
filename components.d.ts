@@ -19,6 +19,7 @@ declare module 'vue' {
     QuillEditor: typeof import('./src/components/QuillEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TagSelector: typeof import('./src/components/ui/TagSelector.vue')['default']
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
     UpgradeToPro: typeof import('./src/components/UpgradeToPro.vue')['default']
     VersionUpdateNotification: typeof import('./src/components/VersionUpdateNotification.vue')['default']

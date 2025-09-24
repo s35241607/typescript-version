@@ -219,12 +219,12 @@ const changeTheme = (newThemeName: string) => {
     margin-block: 2px;
     margin-inline: 8px;
 
-    &:hover {
-      background-color: rgba(var(--v-theme-primary), 0.08);
-    }
-
     &.v-list-item--active {
       background-color: rgba(var(--v-theme-primary), 0.12);
+    }
+
+    &:hover {
+      background-color: rgba(var(--v-theme-primary), 0.08);
     }
   }
 
