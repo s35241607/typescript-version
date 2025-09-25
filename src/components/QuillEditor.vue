@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useTheme } from 'vuetify'
-import { QuillEditor } from '@vueup/vue-quill'
+import { Quill, QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import QuillResizeImage from 'quill-resize-image'
 
+// Type definitions must appear before defineProps in <script setup>
 interface Props {
   modelValue?: string
   config?: Record<string, any>
@@ -20,20 +22,15 @@ interface Emits {
   (e: 'mention', user: any): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: '',
-  config: () => ({}),
-  disabled: false,
-  placeholder: '請輸入內容...',
-  height: '300px',
-  mentionUsers: () => [],
-  enableMention: true,
-})
-
-const emit = defineEmits<Emits>()
+// 取得 props
+const props = defineProps<Props>()
 
 // 編輯器引用
 const quillRef = ref()
+
+// 註冊 quill-resize-image module到 @vueup/vue-quill 的 Quill
+if (Quill && typeof Quill.register === 'function')
+  Quill.register('modules/resize', QuillResizeImage)
 
 // Vuetify 主題
 const theme = useTheme()
@@ -328,6 +325,12 @@ const editorOptions = computed(() => {
           image: imageHandler,
         },
       },
+
+      // 只啟用 quill-resize-image 拖曳縮放，不顯示 toolbar
+      resize: {
+        modules: ['Resize'],
+        locale: {},
+      },
       keyboard: {
         bindings: {
           // 支援 Ctrl+V 貼上圖片
@@ -590,15 +593,16 @@ defineExpose({
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
+/* 使用非 scoped 樣式來避免 stylelint 對 deep 選擇器的誤報，直接以容器選擇器定位 Quill 元素 */
 .quill-editor-wrapper {
-  :deep(.ql-toolbar) {
+  .ql-toolbar {
     border-color: rgba(var(--v-border-color), var(--v-border-opacity));
     border-radius: 8px 8px 0 0;
     background: rgb(var(--v-theme-surface));
   }
 
-  :deep(.ql-container) {
+  .ql-container {
     border-color: rgba(var(--v-border-color), var(--v-border-opacity));
     border-radius: 0 0 8px 8px;
     font-family: inherit;
@@ -606,9 +610,9 @@ defineExpose({
     background: rgb(var(--v-theme-surface));
   }
 
-  :deep(.ql-editor) {
+  .ql-editor {
     color: rgb(var(--v-theme-on-surface));
-    min-height: 150px;
+    min-block-size: 150px;
 
     &.ql-blank::before {
       color: rgba(var(--v-theme-on-surface), 0.6);
@@ -631,19 +635,19 @@ defineExpose({
     }
 
     blockquote {
-      border-left: 4px solid rgb(var(--v-theme-primary));
+      border-inline-start: 4px solid rgb(var(--v-theme-primary));
       background: rgba(var(--v-theme-primary), 0.05);
       color: rgb(var(--v-theme-on-surface));
     }
 
     img {
-      max-width: 100%;
-      height: auto;
+      max-inline-size: 100%;
+      block-size: auto;
       border-radius: 4px;
     }
   }
 
-  :deep(.ql-snow) {
+  .ql-snow {
     .ql-stroke {
       stroke: rgb(var(--v-theme-on-surface));
     }
@@ -655,7 +659,7 @@ defineExpose({
     .ql-picker-options {
       background: rgb(var(--v-theme-surface));
       border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 15%);
     }
 
     .ql-picker-item {
@@ -669,7 +673,7 @@ defineExpose({
     .ql-tooltip {
       background: rgb(var(--v-theme-surface));
       border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 15%);
       color: rgb(var(--v-theme-on-surface));
 
       input {
@@ -685,7 +689,7 @@ defineExpose({
   }
 
   // 暗色主題特殊處理
-  :deep([data-theme="dark"]) {
+  [data-theme="dark"] {
     .ql-toolbar {
       .ql-stroke {
         stroke: rgb(var(--v-theme-on-surface));
@@ -705,8 +709,8 @@ defineExpose({
     }
   }
 
-  // 暗色主題特殊處理
-  &.quill-dark-theme :deep(.ql-toolbar) {
+  /* quill-dark主题 */
+  &.quill-dark-theme .ql-toolbar {
     background: rgb(var(--v-theme-surface-bright));
     border-color: rgba(var(--v-border-color), var(--v-border-opacity));
 
@@ -727,23 +731,23 @@ defineExpose({
     }
   }
 
-  &.quill-dark-theme :deep(.ql-container) {
+  &.quill-dark-theme .ql-container {
     background: rgb(var(--v-theme-surface-bright));
     border-color: rgba(var(--v-border-color), var(--v-border-opacity));
   }
 
-  &.quill-dark-theme :deep(.ql-editor) {
+  &.quill-dark-theme .ql-editor {
     background: rgb(var(--v-theme-surface-bright));
     color: rgb(var(--v-theme-on-surface));
   }
 
-  // 淺色主題處理
-  &.quill-light-theme :deep(.ql-toolbar) {
+  /* 淺色主題 */
+  &.quill-light-theme .ql-toolbar {
     background: rgb(var(--v-theme-surface));
     border-color: rgba(var(--v-border-color), var(--v-border-opacity));
   }
 
-  &.quill-light-theme :deep(.ql-container) {
+  &.quill-light-theme .ql-container {
     background: rgb(var(--v-theme-surface));
     border-color: rgba(var(--v-border-color), var(--v-border-opacity));
   }
@@ -751,39 +755,42 @@ defineExpose({
 
 // Mention 列表樣式
 .mention-list {
-  max-width: 300px;
-  min-width: 200px;
+  max-inline-size: 300px;
+  min-inline-size: 200px;
 }
 
 .mention-card {
-  max-height: 200px;
+  max-block-size: 200px;
   overflow-y: auto;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 15%);
 }
 
 .mention-list-items {
-  padding: 4px 0;
+  padding-block: 4px;
+  padding-inline: 0;
 }
 
 .mention-item {
   cursor: pointer;
   transition: background-color 0.2s ease;
 
+  .v-list-item__content {
+    padding-block: 8px;
+    padding-inline: 0;
+  }
+
   &:hover,
   &.mention-item-selected {
     background: rgba(var(--v-theme-primary), 0.1) !important;
   }
-
-  :deep(.v-list-item__content) {
-    padding: 8px 0;
-  }
 }
 
-:deep(.ql-mention) {
+.ql-mention {
   background: rgba(var(--v-theme-primary), 0.1);
   color: rgb(var(--v-theme-primary));
-  padding: 2px 4px;
+  padding-block: 2px;
+  padding-inline: 4px;
   border-radius: 4px;
   text-decoration: none;
 

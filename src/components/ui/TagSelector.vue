@@ -202,72 +202,94 @@ const _presetColors = [
             </template>
 
             <template v-else>
-              <div class="create-form">
-                <VTextField
-                  v-model="newLabel"
-                  placeholder="標籤名稱"
-                  variant="outlined"
-                  density="compact"
-                  hide-details
-                  class="label-input"
-                />
+              <VCard
+                class="create-card"
+                elevation="2"
+              >
+                <VCardText>
+                  <VTextField
+                    v-model="newLabel"
+                    placeholder="標籤名稱"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    class="label-input"
+                  />
 
-                <div class="color-section">
-                  <div class="color-swatches">
-                    <button
-                      v-for="c in _presetColors"
-                      :key="c"
-                      class="color-swatch"
-                      :class="{ selected: newColor === c }"
-                      :style="{ backgroundColor: c }"
-                      :aria-label="c"
-                      @click.prevent="togglePresetColor(c)"
-                    />
-                  </div>
-
-                  <div class="hex-input-row">
-                    <div class="color-picker-container">
-                      <VBtn
-                        variant="text"
-                        icon
-                        size="small"
-                        class="color-picker-btn"
-                        @click="showColorPicker = !showColorPicker"
-                      >
-                        <div
-                          class="color-preview-btn"
-                          :style="{ backgroundColor: newColor }"
-                        />
-                      </VBtn>
-
-                      <VMenu
-                        v-model="showColorPicker"
-                        :close-on-content-click="false"
-                        location="bottom start"
-                      >
-                        <VColorPicker
-                          v-model="newColor"
-                          mode="hexa"
-                          :swatches="[]"
-                          show-swatches
-                          hide-canvas
-                          hide-inputs
-                          class="compact-color-picker"
-                        />
-                      </VMenu>
+                  <div class="color-section">
+                    <div class="color-swatches">
+                      <button
+                        v-for="c in _presetColors"
+                        :key="c"
+                        class="color-swatch"
+                        :class="{ selected: newColor === c }"
+                        :style="{ backgroundColor: c }"
+                        :aria-label="c"
+                        @click.prevent="togglePresetColor(c)"
+                      />
                     </div>
 
-                    <VTextField
-                      v-model="newColor"
-                      placeholder="#6699cc"
-                      variant="outlined"
-                      density="compact"
-                      hide-details
-                      class="hex-input"
-                    />
+                    <div class="hex-input-row">
+                      <div class="color-picker-container">
+                        <VBtn
+                          variant="text"
+                          size="small"
+                          class="color-picker-btn"
+                          @click="showColorPicker = !showColorPicker"
+                        >
+                          <div
+                            class="color-preview-btn"
+                            :style="{ backgroundColor: newColor }"
+                          />
+                        </VBtn>
+
+                        <VMenu
+                          v-model="showColorPicker"
+                          :close-on-content-click="false"
+                          location="bottom start"
+                        >
+                          <VCard class="color-picker-card">
+                            <VColorPicker
+                              v-model="newColor"
+                              mode="hexa"
+                              show-swatches
+                              hide-canvas
+                              hide-inputs
+                              class="compact-color-picker"
+                            />
+                          </VCard>
+                        </VMenu>
+                      </div>
+
+                      <VTextField
+                        v-model="newColor"
+                        placeholder="#6699cc"
+                        variant="outlined"
+                        density="compact"
+                        hide-details
+                        class="hex-input"
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
+                </VCardText>
+
+                <VCardActions class="create-actions">
+                  <VSpacer />
+                  <VBtn
+                    variant="text"
+                    @click="cancelCreate"
+                  >
+                    取消
+                  </VBtn>
+                  <VBtn
+                    color="primary"
+                    :disabled="!newLabel"
+                    @click="createTagAndExit"
+                  >
+                    建立
+                  </VBtn>
+                </VCardActions>
+              </VCard>
             </template>
           </div>
         </VListItem>
@@ -405,7 +427,7 @@ const _presetColors = [
 
 .color-swatches {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   max-inline-size: 100%;
 }
@@ -469,6 +491,35 @@ const _presetColors = [
   flex: 1;
 }
 
+/* Visual tweaks to match attached screenshot */
+.create-card {
+  background-color: rgb(var(--v-surface));
+  color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+}
+
+/* Make the input show a blue outline when focused inside the create card */
+.create-card .v-field--focused .v-field__outline {
+  border-color: rgb(var(--v-theme-primary));
+  box-shadow: 0 0 0 4px rgba(var(--v-theme-primary) / 12%);
+}
+
+/* Hex input box styling */
+.create-card .hex-input .v-field__outline {
+  background: transparent;
+  border-color: rgba(var(--v-border-color), var(--v-border-opacity));
+}
+
+/* Make the create actions buttons more compact and muted */
+.create-actions .v-btn {
+  min-inline-size: 72px;
+}
+
+.color-picker-btn .color-preview-btn {
+  border-radius: 4px;
+  inline-size: 26px;
+  block-size: 26px;
+}
+
 /* List items styling */
 .check-icon {
   margin-inline-end: 12px;
@@ -525,30 +576,10 @@ const _presetColors = [
 }
 </style>
 
+<!-- Consolidated global (unscoped) styles for the tag selector menu -->
 <style>
-/* Global styles for the tag selector menu */
+/* Ensure the menu can scroll internally and avoid duplicate/contradictory rules */
 .tag-selector-menu {
-  max-block-size: 400px;
-  background-clip: padding-box;
-}
-
-.tag-selector-menu .v-list {
-  padding-block: 0 !important;
-}
-
-.tag-selector-menu .v-list-item {
-  min-block-size: auto !important;
-}
-
-.tag-selector-menu .v-list-item__content {
-  padding-block: 8px;
-}
-</style>
-
-<style>
-/* Global styles for the tag selector menu */
-.tag-selector-menu {
-  /* Ensure proper scrolling within the menu content */
   max-block-size: 400px;
   overflow-y: auto;
   background-clip: padding-box;
@@ -558,7 +589,13 @@ const _presetColors = [
   padding-block: 0 !important;
 }
 
+/* Make list items compact and aligned with the menu layout */
 .tag-selector-menu .v-list-item {
   padding-inline: 0 !important;
+  min-block-size: auto !important;
+}
+
+.tag-selector-menu .v-list-item__content {
+  padding-block: 8px;
 }
 </style>

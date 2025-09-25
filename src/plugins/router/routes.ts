@@ -121,6 +121,18 @@ export const routes = [
         component: () => import('@/pages/TagSelectorDemo.vue'),
         meta: { breadcrumb: 'Tag Selector Demo' },
       },
+      {
+        path: 'tiptap-demo',
+        name: 'TiptapDemo',
+        component: () => import('@/pages/TiptapDemo.vue'),
+        meta: { breadcrumb: 'Tiptap Demo' },
+      },
+      {
+        path: 'tiptap-comparison',
+        name: 'TiptapComparison',
+        component: () => import('@/pages/TiptapComparison.vue'),
+        meta: { breadcrumb: 'Tiptap Comparison' },
+      },
     ],
   },
   {

@@ -63,6 +63,27 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 
+  <!-- Tiptap Editor -->
+  <VerticalNavGroup
+    :item="{
+      title: 'Tiptap Editor',
+      icon: 'ri-edit-2-line',
+    }"
+  >
+    <VerticalNavLink
+      :item="{
+        title: 'Basic Demo',
+        to: '/tiptap-demo',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
+        title: 'Comparison',
+        to: '/tiptap-comparison',
+      }"
+    />
+  </VerticalNavGroup>
+
   <!-- 👉 Tickets -->
   <VerticalNavGroup
     :item="{
