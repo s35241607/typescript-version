@@ -68,13 +68,29 @@ const mentionSuggestions = ref<MentionUser[]>([])
 
 // 顏色選項
 const textColors = [
-  '#000000', '#E53E3E', '#38A169', '#3182CE', '#805AD5',
-  '#D69E2E', '#DD6B20', '#718096', '#9C27B0', '#F44336',
+  '#000000',
+  '#E53E3E',
+  '#38A169',
+  '#3182CE',
+  '#805AD5',
+  '#D69E2E',
+  '#DD6B20',
+  '#718096',
+  '#9C27B0',
+  '#F44336',
 ]
 
 const highlightColors = [
-  '#FFEB3B', '#4CAF50', '#2196F3', '#FF5722', '#9C27B0',
-  '#FFC107', '#FF9800', '#795548', '#607D8B', '#CDDC39',
+  '#FFEB3B',
+  '#4CAF50',
+  '#2196F3',
+  '#FF5722',
+  '#9C27B0',
+  '#FFC107',
+  '#FF9800',
+  '#795548',
+  '#607D8B',
+  '#CDDC39',
 ]
 
 // Mention 建議渲染器
@@ -88,8 +104,10 @@ const mentionSuggestionRenderer = () => ({
   onKeyDown(props: any) {
     if (props.event.key === 'Escape') {
       props.command({ id: null, label: null })
+
       return true
     }
+
     return false
   },
   onExit() {
@@ -136,13 +154,13 @@ const initEditor = () => {
           items: ({ query }: { query: string }) => {
             return props.mentionUsers
               .filter(user =>
-                user.name.toLowerCase().includes(query.toLowerCase())
+                user.name.toLowerCase().includes(query.toLowerCase()),
               )
               .slice(0, 5)
           },
           render: mentionSuggestionRenderer,
         },
-      })
+      }),
     )
   }
 
@@ -152,6 +170,7 @@ const initEditor = () => {
     extensions,
     onUpdate: ({ editor: editorRef }) => {
       const html = editorRef.getHTML()
+
       emit('update:modelValue', html)
     },
     onCreate: ({ editor: editorRef }) => {
@@ -169,20 +188,18 @@ const initEditor = () => {
 // 監聽外部值變化
 watch(
   () => props.modelValue,
-  (newValue) => {
-    if (editorInstance.value && editorInstance.value.getHTML() !== newValue) {
+  newValue => {
+    if (editorInstance.value && editorInstance.value.getHTML() !== newValue)
       editorInstance.value.commands.setContent(newValue || '', false)
-    }
   },
 )
 
 // 監聽禁用狀態
 watch(
   () => props.disabled,
-  (disabled) => {
-    if (editorInstance.value) {
+  disabled => {
+    if (editorInstance.value)
       editorInstance.value.setEditable(!disabled)
-    }
   },
 )
 
@@ -234,6 +251,7 @@ const insertImageFromUrl = () => {
 
 const insertImageFromFile = () => {
   const input = document.createElement('input')
+
   input.type = 'file'
   input.accept = 'image/*'
   input.multiple = false
@@ -242,8 +260,10 @@ const insertImageFromFile = () => {
     const file = input.files?.[0]
     if (file && editorInstance.value) {
       const reader = new FileReader()
-      reader.onload = (e) => {
+
+      reader.onload = e => {
         const base64 = e.target?.result as string
+
         editorInstance.value?.chain().focus().setImage({ src: base64 }).run()
       }
       reader.readAsDataURL(file)
@@ -256,6 +276,7 @@ const insertImageFromFile = () => {
 // 連結處理函數
 const openLinkDialog = () => {
   const selection = editorInstance.value?.state.selection
+
   linkText.value = editorInstance.value?.state.doc.textBetween(selection?.from || 0, selection?.to || 0) || ''
   linkUrl.value = ''
   linkDialogVisible.value = true
@@ -263,11 +284,11 @@ const openLinkDialog = () => {
 
 const insertLink = () => {
   if (linkUrl.value && editorInstance.value) {
-    if (linkText.value) {
+    if (linkText.value)
       editorInstance.value.chain().focus().insertContent(`<a href="${linkUrl.value}">${linkText.value}</a>`).run()
-    } else {
+    else
       editorInstance.value.chain().focus().setLink({ href: linkUrl.value }).run()
-    }
+
     linkDialogVisible.value = false
     linkUrl.value = ''
     linkText.value = ''
@@ -295,9 +316,8 @@ initEditor()
 
 // 組件銷毀時清理
 onBeforeUnmount(() => {
-  if (editorInstance.value) {
+  if (editorInstance.value)
     editorInstance.value.destroy()
-  }
 })
 
 // 暴露編輯器實例
@@ -340,8 +360,8 @@ defineExpose({
                   <VBtn
                     v-bind="tooltipProps"
                     :color="isActive('heading', { level }) ? 'primary' : undefined"
-                    @click="setHeading(level as 1 | 2 | 3)"
                     :data-activity="`heading-${level}`"
+                    @click="setHeading(level as 1 | 2 | 3)"
                   >
                     H{{ level }}
                   </VBtn>
@@ -471,8 +491,8 @@ defineExpose({
                       size="small"
                       class="color-btn"
                       variant="flat"
-                      @click="setTextColor(color)"
                       :data-activity="`text-color-${color}`"
+                      @click="setTextColor(color)"
                     />
                   </div>
                 </VCardText>
@@ -516,8 +536,8 @@ defineExpose({
                       size="small"
                       class="color-btn"
                       variant="flat"
-                      @click="setHighlightColor(color)"
                       :data-activity="`highlight-color-${color}`"
+                      @click="setHighlightColor(color)"
                     />
                   </div>
                 </VCardText>
@@ -908,7 +928,7 @@ defineExpose({
     h4 { font-size: 1.1em; }
     h5 { font-size: 1em; }
     h6 { font-size: 0.9em; }
-    
+
     h1, h2, h3, h4, h5, h6 {
       color: rgb(var(--v-theme-on-surface));
       font-weight: 600;
