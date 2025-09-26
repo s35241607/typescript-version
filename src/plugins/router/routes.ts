@@ -127,12 +127,6 @@ export const routes = [
         component: () => import('@/pages/TiptapDemo.vue'),
         meta: { breadcrumb: 'Tiptap Demo' },
       },
-      {
-        path: 'tiptap-comparison',
-        name: 'TiptapComparison',
-        component: () => import('@/pages/TiptapComparison.vue'),
-        meta: { breadcrumb: 'Tiptap Comparison' },
-      },
     ],
   },
   {

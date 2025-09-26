@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useTheme } from 'vuetify'
 import { Editor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
+import { StarterKit } from '@tiptap/starter-kit'
 import { Image } from '@tiptap/extension-image'
 import { Link } from '@tiptap/extension-link'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -10,8 +10,6 @@ import { Color } from '@tiptap/extension-color'
 import { Highlight } from '@tiptap/extension-highlight'
 import { TextAlign } from '@tiptap/extension-text-align'
 import { Underline } from '@tiptap/extension-underline'
-import { Mention } from '@tiptap/extension-mention'
-import tippy from 'tippy.js'
 
 // 類型定義
 interface Props {
@@ -26,7 +24,7 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: string): void
-  (e: 'ready', editor: Editor): void
+  (e: 'ready', editor: any): void
   (e: 'mention', user: any): void
 }
 
@@ -48,6 +46,19 @@ const theme = useTheme()
 
 // 編輯器實例
 const editor = ref<Editor | null>(null)
+
+// 格式選擇
+const currentFormat = ref('paragraph')
+
+const formatOptions = [
+  { title: 'Normal', value: 'paragraph' },
+  { title: 'Heading 1', value: 'heading1' },
+  { title: 'Heading 2', value: 'heading2' },
+  { title: 'Heading 3', value: 'heading3' },
+  { title: 'Heading 4', value: 'heading4' },
+  { title: 'Heading 5', value: 'heading5' },
+  { title: 'Heading 6', value: 'heading6' },
+]
 
 // 顏色選項
 const textColors = [
@@ -103,13 +114,13 @@ const initEditor = () => {
         types: ['heading', 'paragraph'],
       }),
     ],
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML()
+    onUpdate: ({ editor: editorInstance }) => {
+      const html = editorInstance.getHTML()
 
       emit('update:modelValue', html)
     },
-    onCreate: ({ editor }) => {
-      emit('ready', editor)
+    onCreate: ({ editor: editorInstance }) => {
+      emit('ready', editorInstance)
     },
     editorProps: {
       attributes: {
@@ -125,7 +136,7 @@ watch(
   () => props.modelValue,
   newValue => {
     if (editor.value && editor.value.getHTML() !== newValue)
-      editor.value.commands.setContent(newValue, false)
+      editor.value.commands.setContent(newValue, { emitUpdate: false })
   },
 )
 
@@ -147,6 +158,26 @@ const toggleCode = () => editor.value?.chain().focus().toggleCode().run()
 
 const setHeading = (level: 1 | 2 | 3 | 4 | 5 | 6) => {
   editor.value?.chain().focus().toggleHeading({ level }).run()
+}
+
+// 處理格式變更
+function handleFormatChange(format: string) {
+  if (!editor.value)
+    return
+
+  const formatActions = {
+    paragraph: () => editor.value?.chain().focus().setParagraph().run(),
+    heading1: () => setHeading(1),
+    heading2: () => setHeading(2),
+    heading3: () => setHeading(3),
+    heading4: () => setHeading(4),
+    heading5: () => setHeading(5),
+    heading6: () => setHeading(6),
+  }
+
+  const action = formatActions[format as keyof typeof formatActions]
+  if (action)
+    action()
 }
 
 const toggleBulletList = () => editor.value?.chain().focus().toggleBulletList().run()
@@ -171,15 +202,19 @@ const clearFormatting = () => {
 }
 
 // 插入圖片
-const insertImage = () => {
-  const url = window.prompt('Enter image URL:')
+function insertImage() {
+  // 可以改為使用文件上傳對話框或其他 UI 元件
+  // eslint-disable-next-line no-alert
+  const url = window.prompt && window.prompt('Enter image URL:')
   if (url)
     editor.value?.chain().focus().setImage({ src: url }).run()
 }
 
 // 插入連結
-const insertLink = () => {
-  const url = window.prompt('Enter URL:')
+function insertLink() {
+  // 可以改為使用自定義對話框
+  // eslint-disable-next-line no-alert
+  const url = window.prompt && window.prompt('Enter URL:')
   if (url)
     editor.value?.chain().focus().setLink({ href: url }).run()
 }
@@ -230,297 +265,276 @@ defineExpose({
       data-activity="tiptap-toolbar"
     >
       <VCardText class="pa-2">
-        <VRow no-gutters>
-          <!-- 標題等級 -->
-          <VCol
-            cols="auto"
-            class="me-2"
-          >
-            <VBtnToggle
-              variant="outlined"
-              size="small"
-              density="compact"
-            >
-              <VBtn
-                :color="isActive('heading', { level: 1 }) ? 'primary' : undefined"
-                data-activity="heading-1"
-                @click="setHeading(1)"
-              >
-                H1
-              </VBtn>
-              <VBtn
-                :color="isActive('heading', { level: 2 }) ? 'primary' : undefined"
-                data-activity="heading-2"
-                @click="setHeading(2)"
-              >
-                H2
-              </VBtn>
-              <VBtn
-                :color="isActive('heading', { level: 3 }) ? 'primary' : undefined"
-                data-activity="heading-3"
-                @click="setHeading(3)"
-              >
-                H3
-              </VBtn>
-            </VBtnToggle>
-          </VCol>
-
-          <VDivider
-            vertical
-            class="mx-2"
+        <div class="d-flex align-center flex-wrap ga-1">
+          <!-- 格式下拉選單 -->
+          <VSelect
+            v-model="currentFormat"
+            :items="formatOptions"
+            variant="outlined"
+            density="compact"
+            hide-details
+            class="format-select me-2"
+            data-activity="format-select"
+            @update:model-value="handleFormatChange"
           />
 
-          <!-- 文字樣式 -->
-          <VCol
-            cols="auto"
-            class="me-2"
+          <VDivider
+            vertical
+            class="mx-1 toolbar-divider"
+          />
+
+          <!-- 基本格式按鈕 -->
+          <VBtn
+            :color="isActive('bold') ? 'primary' : undefined"
+            :variant="isActive('bold') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-bold"
+            @click="toggleBold"
           >
-            <VBtnToggle
-              variant="outlined"
-              size="small"
-              density="compact"
-            >
-              <VBtn
-                :color="isActive('bold') ? 'primary' : undefined"
-                data-activity="toggle-bold"
-                @click="toggleBold"
-              >
-                <VIcon icon="ri-bold" />
-              </VBtn>
-              <VBtn
-                :color="isActive('italic') ? 'primary' : undefined"
-                data-activity="toggle-italic"
-                @click="toggleItalic"
-              >
-                <VIcon icon="ri-italic" />
-              </VBtn>
-              <VBtn
-                :color="isActive('underline') ? 'primary' : undefined"
-                data-activity="toggle-underline"
-                @click="toggleUnderline"
-              >
-                <VIcon icon="ri-underline" />
-              </VBtn>
-              <VBtn
-                :color="isActive('strike') ? 'primary' : undefined"
-                data-activity="toggle-strike"
-                @click="toggleStrike"
-              >
-                <VIcon icon="ri-strikethrough" />
-              </VBtn>
-            </VBtnToggle>
-          </VCol>
+            <VIcon icon="ri-bold" />
+          </VBtn>
+          <VBtn
+            :color="isActive('italic') ? 'primary' : undefined"
+            :variant="isActive('italic') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-italic"
+            @click="toggleItalic"
+          >
+            <VIcon icon="ri-italic" />
+          </VBtn>
+          <VBtn
+            :color="isActive('underline') ? 'primary' : undefined"
+            :variant="isActive('underline') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-underline"
+            @click="toggleUnderline"
+          >
+            <VIcon icon="ri-underline" />
+          </VBtn>
+          <VBtn
+            :color="isActive('strike') ? 'primary' : undefined"
+            :variant="isActive('strike') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-strike"
+            @click="toggleStrike"
+          >
+            <VIcon icon="ri-strikethrough" />
+          </VBtn>
 
           <VDivider
             vertical
-            class="mx-2"
+            class="mx-1 toolbar-divider"
           />
 
           <!-- 文字顏色 -->
-          <VCol
-            cols="auto"
-            class="me-2"
-          >
-            <VMenu>
-              <template #activator="{ props: menuProps }">
-                <VBtn
-                  v-bind="menuProps"
-                  variant="outlined"
-                  size="small"
-                  density="compact"
-                  data-activity="text-color-menu"
-                >
-                  <VIcon icon="ri-font-color" />
-                </VBtn>
-              </template>
-              <VCard>
-                <VCardText>
-                  <div class="color-grid">
-                    <VBtn
-                      v-for="color in textColors"
-                      :key="color"
-                      :style="{ backgroundColor: color }"
-                      size="small"
-                      class="color-btn"
-                      :data-activity="`text-color-${color}`"
-                      @click="setTextColor(color)"
-                    />
-                  </div>
-                </VCardText>
-              </VCard>
-            </VMenu>
+          <VMenu location="bottom">
+            <template #activator="{ props: menuProps }">
+              <VBtn
+                v-bind="menuProps"
+                variant="text"
+                size="small"
+                density="comfortable"
+                data-activity="text-color-menu"
+              >
+                <VIcon icon="ri-font-color" />
+              </VBtn>
+            </template>
+            <VCard>
+              <VCardText class="pa-2">
+                <div class="color-grid">
+                  <VBtn
+                    v-for="color in textColors"
+                    :key="color"
+                    :style="{ backgroundColor: color }"
+                    size="x-small"
+                    class="color-btn ma-1"
+                    :data-activity="`text-color-${color}`"
+                    @click="setTextColor(color)"
+                  />
+                </div>
+              </VCardText>
+            </VCard>
+          </VMenu>
 
-            <VMenu>
-              <template #activator="{ props: menuProps }">
-                <VBtn
-                  v-bind="menuProps"
-                  variant="outlined"
-                  size="small"
-                  density="compact"
-                  data-activity="highlight-color-menu"
-                >
-                  <VIcon icon="ri-mark-pen-line" />
-                </VBtn>
-              </template>
-              <VCard>
-                <VCardText>
-                  <div class="color-grid">
-                    <VBtn
-                      v-for="color in highlightColors"
-                      :key="color"
-                      :style="{ backgroundColor: color }"
-                      size="small"
-                      class="color-btn"
-                      :data-activity="`highlight-color-${color}`"
-                      @click="setHighlightColor(color)"
-                    />
-                  </div>
-                </VCardText>
-              </VCard>
-            </VMenu>
-          </VCol>
+          <VMenu location="bottom">
+            <template #activator="{ props: menuProps }">
+              <VBtn
+                v-bind="menuProps"
+                variant="text"
+                size="small"
+                density="comfortable"
+                data-activity="highlight-color-menu"
+              >
+                <VIcon icon="ri-mark-pen-line" />
+              </VBtn>
+            </template>
+            <VCard>
+              <VCardText class="pa-2">
+                <div class="color-grid">
+                  <VBtn
+                    v-for="color in highlightColors"
+                    :key="color"
+                    :style="{ backgroundColor: color }"
+                    size="x-small"
+                    class="color-btn ma-1"
+                    :data-activity="`highlight-color-${color}`"
+                    @click="setHighlightColor(color)"
+                  />
+                </div>
+              </VCardText>
+            </VCard>
+          </VMenu>
 
           <VDivider
             vertical
-            class="mx-2"
+            class="mx-1 toolbar-divider"
           />
 
-          <!-- 對齊方式 -->
-          <VCol
-            cols="auto"
-            class="me-2"
+          <!-- 對齊按鈕 -->
+          <VBtn
+            :color="isActive('textAlign', { textAlign: 'left' }) ? 'primary' : undefined"
+            :variant="isActive('textAlign', { textAlign: 'left' }) ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="align-left"
+            @click="setTextAlign('left')"
           >
-            <VBtnToggle
-              variant="outlined"
-              size="small"
-              density="compact"
-            >
-              <VBtn
-                :color="isActive({ textAlign: 'left' }) ? 'primary' : undefined"
-                data-activity="align-left"
-                @click="setTextAlign('left')"
-              >
-                <VIcon icon="ri-align-left" />
-              </VBtn>
-              <VBtn
-                :color="isActive({ textAlign: 'center' }) ? 'primary' : undefined"
-                data-activity="align-center"
-                @click="setTextAlign('center')"
-              >
-                <VIcon icon="ri-align-center" />
-              </VBtn>
-              <VBtn
-                :color="isActive({ textAlign: 'right' }) ? 'primary' : undefined"
-                data-activity="align-right"
-                @click="setTextAlign('right')"
-              >
-                <VIcon icon="ri-align-right" />
-              </VBtn>
-            </VBtnToggle>
-          </VCol>
+            <VIcon icon="ri-align-left" />
+          </VBtn>
+          <VBtn
+            :color="isActive('textAlign', { textAlign: 'center' }) ? 'primary' : undefined"
+            :variant="isActive('textAlign', { textAlign: 'center' }) ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="align-center"
+            @click="setTextAlign('center')"
+          >
+            <VIcon icon="ri-align-center" />
+          </VBtn>
+          <VBtn
+            :color="isActive('textAlign', { textAlign: 'right' }) ? 'primary' : undefined"
+            :variant="isActive('textAlign', { textAlign: 'right' }) ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="align-right"
+            @click="setTextAlign('right')"
+          >
+            <VIcon icon="ri-align-right" />
+          </VBtn>
+          <VBtn
+            :color="isActive('textAlign', { textAlign: 'justify' }) ? 'primary' : undefined"
+            :variant="isActive('textAlign', { textAlign: 'justify' }) ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="align-justify"
+            @click="setTextAlign('justify')"
+          >
+            <VIcon icon="ri-align-justify" />
+          </VBtn>
 
           <VDivider
             vertical
-            class="mx-2"
+            class="mx-1 toolbar-divider"
           />
 
-          <!-- 列表和引用 -->
-          <VCol
-            cols="auto"
-            class="me-2"
+          <!-- 列表按鈕 -->
+          <VBtn
+            :color="isActive('bulletList') ? 'primary' : undefined"
+            :variant="isActive('bulletList') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-bullet-list"
+            @click="toggleBulletList"
           >
-            <VBtnToggle
-              variant="outlined"
-              size="small"
-              density="compact"
-            >
-              <VBtn
-                :color="isActive('bulletList') ? 'primary' : undefined"
-                data-activity="toggle-bullet-list"
-                @click="toggleBulletList"
-              >
-                <VIcon icon="ri-list-unordered" />
-              </VBtn>
-              <VBtn
-                :color="isActive('orderedList') ? 'primary' : undefined"
-                data-activity="toggle-ordered-list"
-                @click="toggleOrderedList"
-              >
-                <VIcon icon="ri-list-ordered" />
-              </VBtn>
-              <VBtn
-                :color="isActive('blockquote') ? 'primary' : undefined"
-                data-activity="toggle-blockquote"
-                @click="toggleBlockquote"
-              >
-                <VIcon icon="ri-double-quotes-l" />
-              </VBtn>
-            </VBtnToggle>
-          </VCol>
+            <VIcon icon="ri-list-unordered" />
+          </VBtn>
+          <VBtn
+            :color="isActive('orderedList') ? 'primary' : undefined"
+            :variant="isActive('orderedList') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-ordered-list"
+            @click="toggleOrderedList"
+          >
+            <VIcon icon="ri-list-ordered" />
+          </VBtn>
 
           <VDivider
             vertical
-            class="mx-2"
+            class="mx-1 toolbar-divider"
           />
 
           <!-- 其他工具 -->
-          <VCol
-            cols="auto"
-            class="me-2"
+          <VBtn
+            :color="isActive('blockquote') ? 'primary' : undefined"
+            :variant="isActive('blockquote') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-blockquote"
+            @click="toggleBlockquote"
           >
-            <VBtnToggle
-              variant="outlined"
-              size="small"
-              density="compact"
-            >
-              <VBtn
-                :color="isActive('code') ? 'primary' : undefined"
-                data-activity="toggle-code"
-                @click="toggleCode"
-              >
-                <VIcon icon="ri-code-line" />
-              </VBtn>
-              <VBtn
-                :color="isActive('codeBlock') ? 'primary' : undefined"
-                data-activity="toggle-code-block"
-                @click="toggleCodeBlock"
-              >
-                <VIcon icon="ri-code-box-line" />
-              </VBtn>
-              <VBtn
-                data-activity="insert-image"
-                @click="insertImage"
-              >
-                <VIcon icon="ri-image-line" />
-              </VBtn>
-              <VBtn
-                :color="isActive('link') ? 'primary' : undefined"
-                :data-activity="isActive('link') ? 'remove-link' : 'insert-link'"
-                @click="isActive('link') ? removeLink() : insertLink()"
-              >
-                <VIcon :icon="isActive('link') ? 'ri-link-unlink' : 'ri-link'" />
-              </VBtn>
-            </VBtnToggle>
-          </VCol>
+            <VIcon icon="ri-double-quotes-l" />
+          </VBtn>
+          <VBtn
+            :color="isActive('code') ? 'primary' : undefined"
+            :variant="isActive('code') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-code"
+            @click="toggleCode"
+          >
+            <VIcon icon="ri-code-line" />
+          </VBtn>
+          <VBtn
+            :color="isActive('codeBlock') ? 'primary' : undefined"
+            :variant="isActive('codeBlock') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            data-activity="toggle-code-block"
+            @click="toggleCodeBlock"
+          >
+            <VIcon icon="ri-code-box-line" />
+          </VBtn>
+          <VBtn
+            variant="text"
+            size="small"
+            density="comfortable"
+            data-activity="insert-image"
+            @click="insertImage"
+          >
+            <VIcon icon="ri-image-line" />
+          </VBtn>
+          <VBtn
+            :color="isActive('link') ? 'primary' : undefined"
+            :variant="isActive('link') ? 'flat' : 'text'"
+            size="small"
+            density="comfortable"
+            :data-activity="isActive('link') ? 'remove-link' : 'insert-link'"
+            @click="isActive('link') ? removeLink() : insertLink()"
+          >
+            <VIcon :icon="isActive('link') ? 'ri-link-unlink' : 'ri-link'" />
+          </VBtn>
 
           <VDivider
             vertical
-            class="mx-2"
+            class="mx-1 toolbar-divider"
           />
 
           <!-- 清除格式 -->
-          <VCol cols="auto">
-            <VBtn
-              variant="outlined"
-              size="small"
-              density="compact"
-              data-activity="clear-formatting"
-              @click="clearFormatting"
-            >
-              <VIcon icon="ri-format-clear" />
-            </VBtn>
-          </VCol>
-        </VRow>
+          <VBtn
+            variant="text"
+            size="small"
+            density="comfortable"
+            data-activity="clear-formatting"
+            @click="clearFormatting"
+          >
+            <VIcon icon="ri-format-clear" />
+          </VBtn>
+        </div>
       </VCardText>
     </VCard>
 
@@ -531,7 +545,8 @@ defineExpose({
       :class="{ 'mt-0': showToolbar }"
     >
       <EditorContent
-        :editor="editor"
+        v-if="editor"
+        :editor="editor as any"
         class="tiptap-editor-wrapper"
         data-activity="tiptap-content"
       />
@@ -544,6 +559,7 @@ defineExpose({
   .tiptap-toolbar {
     border-block-end: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
     border-radius: 8px 8px 0 0;
+    background-color: rgba(var(--v-theme-surface), 1);
   }
 
   .tiptap-content {
@@ -562,6 +578,16 @@ defineExpose({
   }
 }
 
+// 工具列樣式
+.format-select {
+  min-inline-size: 100px;
+  max-inline-size: 120px;
+}
+
+.toolbar-divider {
+  block-size: 24px;
+}
+
 .tiptap-editor-wrapper {
   .tiptap-editor-content {
     padding: 16px;
@@ -570,6 +596,25 @@ defineExpose({
     font-size: 14px;
     line-height: 1.6;
     color: rgb(var(--v-theme-on-surface));
+
+    // 基本元素樣式重置
+    * {
+      box-sizing: border-box;
+    }
+
+    // 段落樣式
+    p {
+      margin-block: 0.5em;
+      margin-inline: 0;
+
+      &:first-child {
+        margin-block-start: 0;
+      }
+
+      &:last-child {
+        margin-block-end: 0;
+      }
+    }
 
     /* 標題樣式 */
     h1 { font-size: 2em; }
@@ -589,34 +634,16 @@ defineExpose({
       }
     }
 
-    /* 段落樣式 */
-    p {
-      margin-block: 0.5em;
-      margin-inline: 0;
-
-      &:first-child {
-        margin-block-start: 0;
-      }
-
-      &:last-child {
-        margin-block-end: 0;
-      }
-    }
-
     /* 列表樣式 */
     ul, ol {
       padding-inline-start: 1.5em;
       margin-block: 0.5em;
       margin-inline: 0;
+    }
 
-      li {
-        margin-block: 0.25em;
-        margin-inline: 0;
-
-        p {
-          margin: 0;
-        }
-      }
+    li {
+      margin-block: 0.25em;
+      margin-inline: 0;
     }
 
     /* 引用樣式 */
@@ -627,10 +654,6 @@ defineExpose({
       margin-block: 1em;
       margin-inline: 0;
       border-radius: 0 8px 8px 0;
-
-      p {
-        margin: 0;
-      }
     }
 
     /* 代碼樣式 */
@@ -707,20 +730,21 @@ defineExpose({
 .color-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  inline-size: 120px;
+  gap: 6px;
+  inline-size: 140px;
 
   .color-btn {
-    inline-size: 20px !important;
-    block-size: 20px !important;
-    min-inline-size: 20px !important;
-    border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-    border-radius: 4px;
+    inline-size: 24px !important;
+    block-size: 24px !important;
+    min-inline-size: 24px !important;
+    border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
+    border-radius: 6px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
       transform: scale(1.1);
+      box-shadow: 0 2px 8px rgba(0 0 0 / 15%);
     }
   }
 }

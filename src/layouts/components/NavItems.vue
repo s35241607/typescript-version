@@ -76,12 +76,6 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
         to: '/tiptap-demo',
       }"
     />
-    <VerticalNavLink
-      :item="{
-        title: 'Comparison',
-        to: '/tiptap-comparison',
-      }"
-    />
   </VerticalNavGroup>
 
   <!-- 👉 Tickets -->
