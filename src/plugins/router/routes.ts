@@ -122,6 +122,18 @@ export const routes = [
         meta: { breadcrumb: 'Tag Selector Demo' },
       },
       {
+        path: 'label-selector-demo',
+        name: 'LabelSelectorDemo',
+        component: () => import('@/pages/LabelSelectorDemo.vue'),
+        meta: { breadcrumb: 'Label Selector Demo' },
+      },
+      {
+        path: 'advanced-label-selector-demo',
+        name: 'AdvancedLabelSelectorDemo',
+        component: () => import('@/pages/AdvancedLabelSelectorDemo.vue'),
+        meta: { breadcrumb: 'Advanced Label Selector Demo' },
+      },
+      {
         path: 'tiptap-demo',
         name: 'TiptapDemo',
         component: () => import('@/pages/TiptapDemo.vue'),

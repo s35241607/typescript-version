@@ -63,6 +63,24 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     }"
   />
 
+  <!-- LabelSelector Demo -->
+  <VerticalNavLink
+    :item="{
+      title: 'Label Selector Demo',
+      icon: 'ri-bookmark-line',
+      to: '/label-selector-demo',
+    }"
+  />
+
+  <!-- Advanced LabelSelector Demo -->
+  <VerticalNavLink
+    :item="{
+      title: 'Advanced Label Selector',
+      icon: 'ri-bookmark-3-line',
+      to: '/advanced-label-selector-demo',
+    }"
+  />
+
   <!-- Tiptap Editor -->
   <VerticalNavGroup
     :item="{

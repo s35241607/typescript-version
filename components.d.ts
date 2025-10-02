@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdvanceDataTable: typeof import('./src/components/AdvanceDataTable.vue')['default']
+    AdvancedLabelSelector: typeof import('./src/components/ui/AdvancedLabelSelector.vue')['default']
     AdvancedThemeSwitcher: typeof import('./src/components/AdvancedThemeSwitcher.vue')['default']
     CardStatisticsHorizontal: typeof import('./src/@core/components/cards/CardStatisticsHorizontal.vue')['default']
     CardStatisticsVertical: typeof import('./src/@core/components/cards/CardStatisticsVertical.vue')['default']
@@ -15,6 +16,7 @@ declare module 'vue' {
     EnhancedDataTable: typeof import('./src/components/EnhancedDataTable.vue')['default']
     ErrorHeader: typeof import('./src/components/ErrorHeader.vue')['default']
     FileUploader: typeof import('./src/components/FileUploader.vue')['default']
+    LabelSelector: typeof import('./src/components/ui/LabelSelector.vue')['default']
     MoreBtn: typeof import('./src/@core/components/MoreBtn.vue')['default']
     QuillEditor: typeof import('./src/components/QuillEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
