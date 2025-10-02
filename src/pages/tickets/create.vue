@@ -301,7 +301,7 @@ const handleCancel = () => {
               <VRow>
                 <VCol cols="12">
                   <VLabel class="text-body-2 font-weight-medium mb-2">
-                    內容描述 * 
+                    內容描述 *
                     <VChip
                       size="x-small"
                       color="info"

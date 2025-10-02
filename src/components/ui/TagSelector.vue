@@ -27,11 +27,8 @@ const newLabel = ref('')
 const newColor = ref('#6699cc')
 const showColorPicker = ref(false)
 
-// backups to restore on cancel
-const _dialogBackup = ref<{ label: string; color: string } | null>(null)
-
-// whether the select menu is showing the create UI
-const inCreateMode = ref(false)
+// whether the create dialog is open
+const isCreateDialogOpen = ref(false)
 
 watch(selected, v => emit('update:modelValue', v))
 
@@ -48,29 +45,17 @@ function createTag() {
   // reset inputs after successful creation
   newLabel.value = ''
   newColor.value = '#6699cc'
-  _dialogBackup.value = null
-  inCreateMode.value = false
 }
 
 function openCreateDialog() {
-  // save current input state so we can restore on cancel
-  _dialogBackup.value = { label: newLabel.value, color: newColor.value }
-  inCreateMode.value = true
+  isCreateDialogOpen.value = true
 }
 
 function cancelCreate() {
-  // restore backed up values (if any) and close dialog
-  if (_dialogBackup.value) {
-    newLabel.value = _dialogBackup.value.label
-    newColor.value = _dialogBackup.value.color
-  }
-  else {
-    newLabel.value = ''
-    newColor.value = '#6699cc'
-  }
-
-  _dialogBackup.value = null
-  inCreateMode.value = false
+  // reset inputs and close dialog
+  newLabel.value = ''
+  newColor.value = '#6699cc'
+  isCreateDialogOpen.value = false
 }
 
 function togglePresetColor(c: string) {
@@ -79,7 +64,7 @@ function togglePresetColor(c: string) {
 
 function createTagAndExit() {
   createTag()
-  inCreateMode.value = false
+  isCreateDialogOpen.value = false
 }
 
 const visibleItems = computed(() => {
@@ -160,8 +145,7 @@ const _presetColors = [
   <div>
     <VSelect
       v-model="selected"
-      :items="inCreateMode ? [] : visibleItems"
-      :no-data-text="inCreateMode ? '' : 'No data available'"
+      :items="visibleItems"
       label="標記"
       multiple
       chips
@@ -180,117 +164,19 @@ const _presetColors = [
         <VListItem class="menu-header">
           <div class="menu-content">
             <div class="menu-title">
-              <template v-if="!inCreateMode">
-                選擇標記(s)
-              </template>
-              <template v-else>
-                建立標記 (label)
-              </template>
+              選擇標記(s)
             </div>
 
-            <template v-if="!inCreateMode">
-              <VTextField
-                v-model="search"
-                placeholder="搜尋"
-                variant="outlined"
-                density="compact"
-                hide-details
-                clearable
-                prepend-inner-icon="ri-search-line"
-                class="search-field"
-              />
-            </template>
-
-            <template v-else>
-              <VCard
-                class="create-card"
-                elevation="2"
-              >
-                <VCardText>
-                  <VTextField
-                    v-model="newLabel"
-                    placeholder="標籤名稱"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    class="label-input"
-                  />
-
-                  <div class="color-section">
-                    <div class="color-swatches">
-                      <button
-                        v-for="c in _presetColors"
-                        :key="c"
-                        class="color-swatch"
-                        :class="{ selected: newColor === c }"
-                        :style="{ backgroundColor: c }"
-                        :aria-label="c"
-                        @click.prevent="togglePresetColor(c)"
-                      />
-                    </div>
-
-                    <div class="hex-input-row">
-                      <div class="color-picker-container">
-                        <VBtn
-                          variant="text"
-                          size="small"
-                          class="color-picker-btn"
-                          @click="showColorPicker = !showColorPicker"
-                        >
-                          <div
-                            class="color-preview-btn"
-                            :style="{ backgroundColor: newColor }"
-                          />
-                        </VBtn>
-
-                        <VMenu
-                          v-model="showColorPicker"
-                          :close-on-content-click="false"
-                          location="bottom start"
-                        >
-                          <VCard class="color-picker-card">
-                            <VColorPicker
-                              v-model="newColor"
-                              mode="hexa"
-                              show-swatches
-                              hide-canvas
-                              hide-inputs
-                              class="compact-color-picker"
-                            />
-                          </VCard>
-                        </VMenu>
-                      </div>
-
-                      <VTextField
-                        v-model="newColor"
-                        placeholder="#6699cc"
-                        variant="outlined"
-                        density="compact"
-                        hide-details
-                        class="hex-input"
-                      />
-                    </div>
-                  </div>
-                </VCardText>
-
-                <VCardActions class="create-actions">
-                  <VSpacer />
-                  <VBtn
-                    variant="text"
-                    @click="cancelCreate"
-                  >
-                    取消
-                  </VBtn>
-                  <VBtn
-                    color="primary"
-                    :disabled="!newLabel"
-                    @click="createTagAndExit"
-                  >
-                    建立
-                  </VBtn>
-                </VCardActions>
-              </VCard>
-            </template>
+            <VTextField
+              v-model="search"
+              placeholder="搜尋"
+              variant="outlined"
+              density="compact"
+              hide-details
+              clearable
+              prepend-inner-icon="ri-search-line"
+              class="search-field"
+            />
           </div>
         </VListItem>
       </template>
@@ -321,24 +207,18 @@ const _presetColors = [
         </VListItem>
       </template>
 
-      <template #selection="{ item, index }">
-        <!-- render selected chips as color-only pill (no text) -->
-        <div
-          :key="index"
-          class="v-chip--selection"
-        >
-          <span
-            class="chip-dot"
-            :style="{ backgroundColor: _getColorFromSlot(item) || '#bdbdbd' }"
-            aria-hidden="true"
-          />
-        </div>
+      <template #chip="{ props: chipProps, item }">
+        <VChip
+          v-bind="chipProps"
+          :color="_getColorFromSlot(item)"
+          size="small"
+        />
       </template>
 
       <template #append-item>
         <!-- Fixed Footer -->
         <div class="menu-footer">
-          <div v-if="!inCreateMode">
+          <div>
             <VBtn
               variant="text"
               data-activity="create-project-label"
@@ -354,31 +234,105 @@ const _presetColors = [
               管理專案標記 (label)
             </VBtn>
           </div>
-
-          <div
-            v-else
-            class="d-flex justify-end gap-2"
-          >
-            <VBtn
-              variant="text"
-              data-activity="cancel-create-label"
-              @click="cancelCreate"
-            >
-              取消
-            </VBtn>
-            <VBtn
-              color="primary"
-              data-activity="create-label-submit"
-              @click="createTagAndExit"
-            >
-              建立
-            </VBtn>
-          </div>
         </div>
       </template>
     </VSelect>
 
-    <!-- create UI moved inside select menu via inCreateMode -->
+    <!-- Create Tag Dialog -->
+    <VDialog
+      v-model="isCreateDialogOpen"
+      max-width="400px"
+      persistent
+    >
+      <VCard
+        class="create-card"
+        title="建立標記 (label)"
+      >
+        <VCardText>
+          <VTextField
+            v-model="newLabel"
+            placeholder="標籤名稱"
+            variant="outlined"
+            density="compact"
+            hide-details
+            class="label-input"
+          />
+
+          <div class="color-section">
+            <div class="color-swatches">
+              <button
+                v-for="c in _presetColors"
+                :key="c"
+                class="color-swatch"
+                :class="{ selected: newColor === c }"
+                :style="{ backgroundColor: c }"
+                :aria-label="c"
+                @click.prevent="togglePresetColor(c)"
+              />
+            </div>
+
+            <div class="hex-input-row">
+              <div class="color-picker-container">
+                <VBtn
+                  variant="text"
+                  size="small"
+                  class="color-picker-btn"
+                  @click="showColorPicker = !showColorPicker"
+                >
+                  <div
+                    class="color-preview-btn"
+                    :style="{ backgroundColor: newColor }"
+                  />
+                </VBtn>
+
+                <VMenu
+                  v-model="showColorPicker"
+                  :close-on-content-click="false"
+                  location="bottom start"
+                >
+                  <VCard class="color-picker-card">
+                    <VColorPicker
+                      v-model="newColor"
+                      mode="hexa"
+                      show-swatches
+                      hide-canvas
+                      hide-inputs
+                      class="compact-color-picker"
+                    />
+                  </VCard>
+                </VMenu>
+              </div>
+
+              <VTextField
+                v-model="newColor"
+                placeholder="#6699cc"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="hex-input"
+              />
+            </div>
+          </div>
+        </VCardText>
+
+        <VCardActions class="create-actions">
+          <VSpacer />
+          <VBtn
+            variant="text"
+            @click="cancelCreate"
+          >
+            取消
+          </VBtn>
+          <VBtn
+            color="primary"
+            :disabled="!newLabel"
+            @click="createTagAndExit"
+          >
+            建立
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 
@@ -545,26 +499,6 @@ const _presetColors = [
       color: rgb(var(--v-theme-primary));
     }
   }
-}
-
-/* Selection chips styling */
-.v-chip--selection {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding-block: 4px;
-  padding-inline: 8px;
-  background-color: rgba(0 0 0 / 6%);
-  border-radius: 16px;
-  margin-inline-end: 6px;
-}
-
-.chip-dot {
-  inline-size: 18px;
-  block-size: 10px;
-  border-radius: 999px;
-  display: inline-block;
-  border: 1px solid rgba(0 0 0 / 8%);
 }
 
 /* Footer styling */
