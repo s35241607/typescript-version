@@ -301,7 +301,7 @@ const handleCancel = () => {
               <VRow>
                 <VCol cols="12">
                   <VLabel class="text-body-2 font-weight-medium mb-2">
-                    內容描述 * 
+                    內容描述 *
                     <VChip
                       size="x-small"
                       color="info"
@@ -597,12 +597,12 @@ const handleCancel = () => {
 
 <style lang="scss" scoped>
 .create-ticket-page {
-  min-height: 100vh;
+  min-block-size: 100vh;
 }
 
 .preview-content {
   .preview-description {
-    max-height: 200px;
+    max-block-size: 200px;
     overflow-y: auto;
     padding: 12px;
     border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
@@ -610,20 +610,22 @@ const handleCancel = () => {
     background: rgba(var(--v-theme-surface), 0.5);
 
     :deep(p) {
-      margin-bottom: 8px;
+      margin-block-end: 8px;
 
       &:last-child {
-        margin-bottom: 0;
+        margin-block-end: 0;
       }
     }
 
     :deep(ul, ol) {
-      margin: 8px 0;
-      padding-left: 20px;
+      margin-block: 8px;
+      margin-inline: 0;
+      padding-inline-start: 20px;
     }
 
     :deep(h1, h2, h3, h4, h5, h6) {
-      margin: 12px 0 8px 0;
+      margin-block: 12px 8px;
+      margin-inline: 0;
       font-weight: 600;
     }
   }
@@ -631,19 +633,19 @@ const handleCancel = () => {
 
 :deep(.v-text-field) {
   .v-field__input {
-    min-height: 56px;
+    min-block-size: 56px;
   }
 }
 
 :deep(.v-select) {
   .v-field__input {
-    min-height: 56px;
+    min-block-size: 56px;
   }
 }
 
 :deep(.v-autocomplete) {
   .v-field__input {
-    min-height: 56px;
+    min-block-size: 56px;
   }
 }
 </style>

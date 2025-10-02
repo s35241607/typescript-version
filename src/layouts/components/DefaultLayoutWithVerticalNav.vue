@@ -50,7 +50,7 @@ watch(mdAndDown, isMobile => {
             {{ isVerticalNavCollapsed ? '展開側邊欄' : '收合側邊欄' }}
           </VTooltip>
         </VBtn>
-        
+
         <!-- 👉 Vertical nav toggle in overlay mode -->
         <IconBtn
           class="ms-n3 d-lg-none mobile-menu-btn"
@@ -58,7 +58,7 @@ watch(mdAndDown, isMobile => {
         >
           <VIcon icon="ri-menu-line" />
         </IconBtn>
-        
+
         <!-- 👉 Breadcrumbs -->
         <Breadcrumbs />
 
@@ -142,7 +142,7 @@ watch(mdAndDown, isMobile => {
     min-inline-size: 32px;
     block-size: 32px;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    
+
     svg {
       inline-size: 100%;
       block-size: 100%;
@@ -156,7 +156,7 @@ watch(mdAndDown, isMobile => {
     color: rgb(var(--v-theme-primary));
     white-space: nowrap;
   }
-  
+
   &:hover .app-logo-icon {
     transform: scale(1.1) rotate(5deg);
   }
@@ -182,7 +182,7 @@ watch(mdAndDown, isMobile => {
 .nav-collapse-btn {
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     position: absolute;
     content: '';
@@ -195,7 +195,7 @@ watch(mdAndDown, isMobile => {
     transform: translate(-50%, -50%);
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  
+
   &:hover::before {
     inline-size: 100%;
     block-size: 100%;
@@ -208,7 +208,7 @@ watch(mdAndDown, isMobile => {
   border-radius: 12px !important;
   background: rgba(var(--v-theme-error), 8%) !important;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-  
+
   &:hover {
     background: rgba(var(--v-theme-error), 15%) !important;
     transform: scale(1.05) rotate(90deg);

@@ -1,174 +1,294 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { formatDate } from '@/utils/date'
 
-// Router
+// 👉 路由實例
 const router = useRouter()
 
-// Data
-const loading = ref(false)
+interface TicketLabel {
+  text: string
+  color: 'primary' | 'success' | 'warning' | 'error' | 'info' | 'secondary'
+}
 
-const tickets = ref([
+interface TicketSummary {
+  id: number
+  reference: string
+  title: string
+  description: string
+  project: string
+  assignee: string
+  icon: string
+  updatedAt: string
+  comments: number
+  labels: TicketLabel[]
+}
+
+// 👉 搜尋輸入欄位
+const searchTerm = ref('')
+
+// 👉 工單範例資料
+const tickets = ref<TicketSummary[]>([
   {
-    id: 1,
-    title: '系統登入問題',
-    status: 'open',
-    priority: 'high',
-    assignee: 'John Doe',
-    createdAt: '2024-01-15',
+    id: 6,
+    reference: 'lan9731016/lan_group/gitlab-ci-test#6',
+    title: 'Enable email registration',
+    description: 'Allow new members to sign up with email verification.',
+    project: 'Authentication',
+    assignee: 'Lan',
+    icon: 'ri-mail-add-line',
+    updatedAt: '2024-08-27T00:00:00Z',
+    comments: 2,
+    labels: [
+      { text: 'confirmed', color: 'primary' },
+      { text: 'critical', color: 'error' },
+      { text: 'enhancement :D', color: 'success' },
+      { text: 'suggestion', color: 'info' },
+    ],
   },
   {
-    id: 2,
-    title: '資料匯出功能異常',
-    status: 'in-progress',
-    priority: 'medium',
-    assignee: 'Jane Smith',
-    createdAt: '2024-01-14',
+    id: 5,
+    reference: 'lan9731016/lan_group/gitlab-ci-test#5',
+    title: 'Implement user login flow',
+    description: 'Create the full login experience with password reset.',
+    project: 'Authentication',
+    assignee: 'Lan',
+    icon: 'ri-login-circle-line',
+    updatedAt: '2024-08-27T00:00:00Z',
+    comments: 8,
+    labels: [
+      { text: 'in progress', color: 'warning' },
+      { text: 'backend', color: 'secondary' },
+      { text: 'suggestion', color: 'info' },
+    ],
+  },
+  {
+    id: 4,
+    reference: 'lan9731016/lan_group/gitlab-ci-test#4',
+    title: 'Dashboard performance review',
+    description: 'Investigate the loading time of analytics widgets.',
+    project: 'Reporting',
+    assignee: 'Sky',
+    icon: 'ri-dashboard-line',
+    updatedAt: '2024-08-18T00:00:00Z',
+    comments: 5,
+    labels: [
+      { text: 'performance', color: 'warning' },
+      { text: 'enhancement', color: 'success' },
+    ],
   },
   {
     id: 3,
-    title: '新增使用者權限',
-    status: 'resolved',
-    priority: 'low',
-    assignee: 'Bob Johnson',
-    createdAt: '2024-01-13',
+    reference: 'lan9731016/lan_group/gitlab-ci-test#3',
+    title: 'Update brand illustration',
+    description: 'Refresh hero image to align with new marketing campaign.',
+    project: 'Design system',
+    assignee: 'Mia',
+    icon: 'ri-brush-line',
+    updatedAt: '2024-08-10T00:00:00Z',
+    comments: 1,
+    labels: [
+      { text: 'design', color: 'secondary' },
+      { text: 'low priority', color: 'primary' },
+    ],
   },
 ])
 
-// Table headers
-const headers = [
-  { title: 'ID', key: 'id', sortable: true },
-  { title: '標題', key: 'title', sortable: true },
-  { title: '狀態', key: 'status', sortable: true },
-  { title: '優先級', key: 'priority', sortable: true },
-  { title: '負責人', key: 'assignee', sortable: true },
-  { title: '建立日期', key: 'createdAt', sortable: true },
-  { title: '操作', key: 'actions', sortable: false },
-]
+// 👉 篩選後的工單清單
+const filteredTickets = computed(() => {
+  const term = searchTerm.value.trim().toLowerCase()
 
-// Methods
-const getStatusColor = (status: string) => {
-  const colors = {
-    'open': 'error',
-    'in-progress': 'warning',
-    'resolved': 'success',
-    'closed': 'secondary',
-  }
+  if (!term)
+    return tickets.value
 
-  return colors[status] || 'primary'
-}
+  return tickets.value.filter(ticket => {
+    const haystack = [
+      ticket.title,
+      ticket.reference,
+      ticket.description,
+      ticket.project,
+      ticket.assignee,
+      ticket.labels.map(label => label.text).join(' '),
+    ].join(' ').toLowerCase()
 
-const getStatusText = (status: string) => {
-  const texts = {
-    'open': '開放',
-    'in-progress': '處理中',
-    'resolved': '已解決',
-    'closed': '已關閉',
-  }
-
-  return texts[status] || status
-}
-
-const getPriorityColor = (priority: string) => {
-  const colors = {
-    low: 'success',
-    medium: 'warning',
-    high: 'error',
-    urgent: 'error',
-  }
-
-  return colors[priority] || 'primary'
-}
-
-const getPriorityText = (priority: string) => {
-  const texts = {
-    low: '低',
-    medium: '中',
-    high: '高',
-    urgent: '緊急',
-  }
-
-  return texts[priority] || priority
-}
-
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('zh-TW')
-}
-
-const viewTicket = (id: number) => {
-  router.push(`/tickets/${id}`)
-}
-
-const editTicket = (id: number) => {
-  router.push(`/tickets/${id}/edit`)
-}
-
-onMounted(() => {
-  // 在這裡可以加入 API 呼叫來載入實際的工單資料
+    return haystack.includes(term)
+  })
 })
+
+// 👉 是否無符合條件的工單
+const hasNoResult = computed(() => filteredTickets.value.length === 0)
+
+// 👉 導向工單詳細頁面
+function navigateToTicket(ticketId: number) {
+  router.push(`/tickets/${ticketId}`)
+}
+
+// 👉 導向新工單建立頁面
+function createTicket() {
+  router.push('/tickets/create')
+}
 </script>
 
 <template>
-  <VCard>
-    <VCardTitle class="d-flex align-center justify-space-between">
-      <span>工單列表</span>
-      <VBtn
-        color="primary"
-        variant="elevated"
-        prepend-icon="ri-add-line"
-        @click="$router.push('/tickets/create')"
-      >
-        建立工單
-      </VBtn>
-    </VCardTitle>
+  <VContainer class="pa-0">
+    <VCard class="ticket-board">
+      <VCardText class="pa-6">
+        <div class="d-flex flex-wrap align-center gap-4 mb-6">
+          <div class="flex-grow-1">
+            <VTextField
+              v-model="searchTerm"
+              variant="outlined"
+              placeholder="Search tickets"
+              prepend-inner-icon="ri-search-line"
+              density="comfortable"
+              hide-details
+              data-activity="tickets-search-field"
+            />
+          </div>
 
-    <VCardText>
-      <VDataTable
-        :headers="headers"
-        :items="tickets"
-        :loading="loading"
-        item-value="id"
-        class="elevation-1"
-      >
-        <template #item.status="{ item }">
-          <VChip
-            :color="getStatusColor(item.status)"
-            size="small"
-            variant="tonal"
+          <VBtn
+            color="primary"
+            variant="flat"
+            prepend-icon="ri-add-line"
+            class="text-none"
+            data-activity="tickets-create-button"
+            @click="createTicket"
           >
-            {{ getStatusText(item.status) }}
-          </VChip>
-        </template>
+            New ticket
+          </VBtn>
+        </div>
 
-        <template #item.priority="{ item }">
-          <VChip
-            :color="getPriorityColor(item.priority)"
-            size="small"
+        <div class="d-flex flex-wrap align-center justify-space-between mb-4 gap-2">
+          <span class="text-subtitle-2 text-medium-emphasis">
+            Showing {{ filteredTickets.length }} of {{ tickets.length }} tickets
+          </span>
+        </div>
+
+        <div
+          v-if="!hasNoResult"
+          class="d-flex flex-column gap-4"
+        >
+          <VCard
+            v-for="ticket in filteredTickets"
+            :key="ticket.id"
+            class="ticket-card"
             variant="outlined"
           >
-            {{ getPriorityText(item.priority) }}
-          </VChip>
-        </template>
+            <VCardText class="d-flex flex-wrap align-start justify-space-between gap-6">
+              <div class="ticket-card__content">
+                <div class="d-flex align-start gap-4 mb-4">
+                  <VAvatar
+                    color="primary"
+                    size="44"
+                    variant="tonal"
+                    class="ticket-card__avatar"
+                  >
+                    <VIcon :icon="ticket.icon" />
+                  </VAvatar>
 
-        <template #item.createdAt="{ item }">
-          {{ formatDate(item.createdAt) }}
-        </template>
+                  <div class="ticket-card__headline">
+                    <div class="d-flex flex-wrap align-center gap-2 mb-1">
+                      <span class="text-subtitle-1 font-weight-medium">
+                        {{ ticket.title }}
+                      </span>
 
-        <template #item.actions="{ item }">
-          <VBtn
-            icon="ri-eye-line"
-            variant="text"
-            size="small"
-            @click="viewTicket(item.id)"
-          />
-          <VBtn
-            icon="ri-edit-line"
-            variant="text"
-            size="small"
-            @click="editTicket(item.id)"
-          />
-        </template>
-      </VDataTable>
-    </VCardText>
-  </VCard>
+                      <VChip
+                        size="small"
+                        color="primary"
+                        variant="tonal"
+                        class="text-caption"
+                      >
+                        {{ ticket.reference }}
+                      </VChip>
+                    </div>
+
+                    <p class="text-body-2 text-medium-emphasis mb-0">
+                      {{ ticket.description }}
+                    </p>
+
+                    <div class="text-body-2 text-medium-emphasis mt-1">
+                      {{ ticket.project }} · Assigned to {{ ticket.assignee }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-wrap align-center gap-2">
+                  <VChip
+                    v-for="label in ticket.labels"
+                    :key="label.text"
+                    :color="label.color"
+                    variant="tonal"
+                    size="small"
+                    class="ticket-card__label text-caption"
+                  >
+                    {{ label.text }}
+                  </VChip>
+                </div>
+              </div>
+
+              <div class="ticket-card__aside d-flex flex-column align-end gap-3">
+                <div class="text-body-2 text-medium-emphasis">
+                  Updated on {{ formatDate(ticket.updatedAt, 'yyyy-MM-dd') }}
+                </div>
+
+                <VChip
+                  color="secondary"
+                  variant="outlined"
+                  size="small"
+                  prepend-icon="ri-chat-3-line"
+                  class="text-caption"
+                >
+                  {{ ticket.comments }} comments
+                </VChip>
+
+                <VBtn
+                  color="primary"
+                  variant="text"
+                  append-icon="ri-arrow-right-line"
+                  class="text-none"
+                  data-activity="tickets-view-details"
+                  @click="navigateToTicket(ticket.id)"
+                >
+                  View details
+                </VBtn>
+              </div>
+            </VCardText>
+          </VCard>
+        </div>
+
+        <VAlert
+          v-else
+          border="start"
+          color="info"
+          variant="tonal"
+          icon="ri-search-eye-line"
+        >
+          No tickets match your search.
+        </VAlert>
+      </VCardText>
+    </VCard>
+  </VContainer>
 </template>
+
+<style scoped>
+.ticket-board {
+  border-radius: 16px;
+  box-shadow: var(--v-shadow-2);
+}
+
+.ticket-card {
+  border-radius: 16px;
+}
+
+.ticket-card__avatar {
+  box-shadow: none;
+}
+
+.ticket-card__label {
+  text-transform: capitalize;
+}
+
+.ticket-card__aside {
+  min-inline-size: 180px;
+}
+</style>
