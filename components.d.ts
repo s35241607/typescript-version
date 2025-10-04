@@ -24,9 +24,8 @@ declare module 'vue' {
     TagSelector: typeof import('./src/components/ui/TagSelector.vue')['default']
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
     TiptapEditor: typeof import('./src/components/TiptapEditor.vue')['default']
-    TiptapEditorEnhanced: typeof import('./src/components/TiptapEditorEnhanced.vue')['default']
-    TiptapEditorV2: typeof import('./src/components/TiptapEditorV2.vue')['default']
     UpgradeToPro: typeof import('./src/components/UpgradeToPro.vue')['default']
     VersionUpdateNotification: typeof import('./src/components/VersionUpdateNotification.vue')['default']
+    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

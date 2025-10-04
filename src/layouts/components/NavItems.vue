@@ -119,6 +119,13 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
         icon: 'ri-add-circle-line',
       }"
     />
+    <VerticalNavLink
+      :item="{
+        title: 'Ticket Detail (Demo)',
+        to: '/tickets/6',
+        icon: 'ri-file-text-line',
+      }"
+    />
   </VerticalNavGroup>
 
   <!-- New NavLink for Price Review Dashboard -->

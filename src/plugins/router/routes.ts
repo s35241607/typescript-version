@@ -53,6 +53,12 @@ export const routes = [
         meta: { breadcrumb: 'Create Ticket' },
       },
       {
+        path: 'tickets/:id',
+        name: 'TicketDetail',
+        component: () => import('@/pages/tickets/detail.vue'),
+        meta: { breadcrumb: 'Ticket Detail' },
+      },
+      {
         path: 'mention-test',
         name: 'MentionTest',
         component: () => import('@/pages/MentionTest.vue'),
